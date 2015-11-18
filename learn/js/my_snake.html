@@ -1,0 +1,211 @@
+<html>
+<body>
+
+<div id="current-score"></div>
+
+
+<label>Начальная скорость</label><input name="start-speed" id="start-speed" type="text" value="500">
+<label>Размер поля</label><input name="field-size" id="field-size" type="text">
+<label>Частота ускорения</label><input name="speed-increase-interval" id="speed-increase-interval" type="text">
+<input type="button" onclick="start()">
+
+
+</body>
+</html>
+
+<style>
+.line div{
+ width: 20px;
+    height: 20px;
+    float: left;
+    margin: 1px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: background-color .5s;
+}
+.line {
+clear: left;
+}
+
+.line div.s {
+    background-color: #bbb;
+    transition: background-color .5s;
+}
+
+.line div.f {
+    background-color: green;
+    transition: background-color 2s;
+}
+
+
+</style>
+
+<script>
+var width;
+var height;
+var keys = new Array();
+var dx = 1;
+var dy = 0;
+var x = 0;
+var y = 0;
+var length = 5;
+var turn = 0;
+var food_placed = false;
+var score = 0;
+var interval;
+
+function createFieldBlock(x, y) {
+    var elem = document.createElement("div");
+    elem.id = x + '_' + y;
+    elem.className = x + '_' + y;
+    //elem.innerHTML = x + '_' + y;
+    return elem;
+}
+
+function createLine(){
+    var elem = document.createElement("div");
+    elem.className = 'line';
+    return elem;
+}
+
+
+function createField(width, height){
+for (var y= 0; y < width; y++){
+    var line = createLine();
+    document.body.appendChild(line);
+    for (var x = 0; x < height; x++){
+        var new_elem = createFieldBlock(x, y);
+        line.appendChild(new_elem);
+        }
+    }
+}
+
+//37 - влево
+//38 - вверх
+//39 - вправо
+//40 - вниз
+
+function get_directions(){
+    while(keys.length > 0){
+        var keyCode = keys.shift()
+        var key_dx = -1 * (38 - keyCode);
+        var key_dy = -1 *( 39 - keyCode);
+        if(Math.abs(key_dx) == 1 && Math.abs(dx) == 0){
+        dx = key_dx;
+        dy = 0;
+            return
+        }
+        if(Math.abs(key_dy) == 1 && Math.abs(dy) == 0){
+        dy = key_dy;
+        dx = 0;
+            return
+        }
+    }
+}
+
+
+function placeFood(){
+while(true){
+    var rand_x = Math.round(Math.random() * width);
+    var rand_y = Math.round(Math.random() * height);
+    var elem = document.body.getElementsByClassName(rand_x + '_' + rand_y)[0];
+    if (elem.className.indexOf(' s') == -1){
+    elem.className = elem.className + ' f';
+    food_placed = true;
+    break;
+    }
+}
+}
+
+
+function checkEndGame(){
+var new_elem = document.body.getElementsByClassName(x + '_' + y)[0];
+var endGame = false;
+    if(x >= width || y >= width || x < 0 || y < 0){
+    endGame = true;
+    }
+    else if (new_elem.className.indexOf(' s') > -1) {
+    endGame = true;
+    }
+
+    if (endGame){
+    clearInterval(timer);
+    alert('Score:' + score);
+        }
+}
+
+
+
+
+document.body.onkeydown = function(e){
+   var currentCode = e.keyCode;
+   var lastKey = keys[keys.length - 1];
+   if(keys.length == 0 || !(lastKey == currentCode)){
+    keys.push(currentCode);
+   }
+   //alert(keys);
+}
+
+
+function start(){
+//var frm = document.getElementById('settings-form');
+interval = document.getElementById('start-speed').value;
+width = document.getElementById('field-size').value;
+height = width;
+createField(width, height);
+timer = setInterval(function(){makeMove()}, interval);
+
+}
+
+
+
+
+
+function makeMove() {
+    turn++;
+//var cur_elem = document.body.getElementsByClassName(x + '_' + y)[0];
+    var snake_elems = document.body.getElementsByClassName('s');
+    if (snake_elems.length > length) {
+        var min = Infinity;
+        for (var i = 0; i < snake_elems.length; i++) {
+            var elem = snake_elems[i];
+            var snake_data = +elem.getAttribute('snake-data');
+            if (snake_data < min) {
+                min = snake_data;
+                var elem_to_del = snake_elems[i];
+            }
+
+        }
+
+        elem_to_del.className = elem_to_del.className.replace(' s', '');
+    }
+    get_directions();
+    x += dx;
+    y += dy;
+    var new_elem = document.body.getElementsByClassName(x + '_' + y)[0];
+
+    checkEndGame();
+
+    new_elem.className = new_elem.className + ' s';
+    new_elem.setAttribute('snake-data', turn);
+
+    if (new_elem.className.indexOf(' f') > -1) {
+        length += 1;
+        score += 1;
+        new_elem.className = new_elem.className.replace(' f', '');
+        food_placed = false;
+        if (score % 3 == 0){
+        interval = 0.9 * interval;
+        clearInterval(timer);
+        timer = setInterval(function(){makeMove()}, interval);
+        }
+    }
+
+if(!food_placed){
+placeFood();
+}
+}
+
+
+</script>

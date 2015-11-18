@@ -1,0 +1,137 @@
+Селекторы
+
+http://jquery-docs.ru/selectors/
+http://www.w3schools.com/CSSref/css_selectors.asp
+
+
+
+апи
+http://api.jquery.com/
+
+<script>
+$("#bigIt").empty().attr("class", "noContent");
+// в результате, у элемента с идентификатором bigIt будет удалено все содержимое,
+// после чего ему будет установлен класс noContent.
+</script>
+#**************************************************************
+
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<form method="post" id="comment-form" action="/contact_form/add/">
+{% csrf_token %}
+{{ form.as_p }}
+<input type = hidden name="back_url" value="{{ path }}">
+<input type=submit value="Отправить" id="contact_form_submit">
+</form>
+<div id="test">
+</div>
+<div id="form-error"></div>
+
+<script type="text/javascript">
+    var frm = $('#comment-form');
+    frm.submit(function () {
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                $("#comment-form").html(data);
+            },
+            error: function(data) {
+                $("#form-error").html("Ошибка при отправке формы");
+            }
+        });
+        return false;
+    });
+</script>
+
+#**************************************************************
+
+{% extends "kulik/base.html" %}
+{% block content %}
+<form action="" method="post" enctype="multipart/form-data" id ="post_create_form">
+{% csrf_token %}
+{{ form.as_p }}
+{{ components_formset.management_form }}
+{% for form in components_formset.forms %}
+<div class='table'>
+<table class='no_error'>
+{{ form.as_table }}
+</table>
+</div>
+{% endfor %}
+<input type="button" id = 'components_formset_add_field' value="Добавить компонент">
+{{ image_formset.as_p }}
+<input type="submit" label="submit">
+</form>
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $('#components_formset_add_field').click(function() {
+        cloneMore('div.table:last', 'productcomponent_set');
+    });
+//$ - главная функция jquery
+//$('#components_formset_add_field').click() - эта функция ждет внутри себя другую функцию
+//   function() {
+//        cloneMore('div.table:last', 'productcomponent_set');
+//    }
+// это функция, которая будет вызываться при собитии(click). Она не получает аргументов.
+//И вызывает другую функцию:
+
+function cloneMore(selector, type) {
+    var newElement = $(selector).clone(true);  //Клонируем последний элемент со всей датой и обработчиками
+    var total = $('#id_' + type + '-TOTAL_FORMS').val(); //Получаем количество форм. Django создает такой input, мы читаем его значение
+    newElement.find(':input').each(function() { // find(':input') Находим в клонированном элементе все поля ввода
+    //each - обход элементов. Внутри должна быть объявлена функция, которая имеет доступ к this - текущему элементу
+    //Обращаясь как this - просто к элементу, $(this) - типа как jquery элементу
+        var name = $(this).attr('name').replace('-' + (total-1) + '-','-' + total + '-');
+        //Получаем аттрибут 'name' текущего input
+        //И заменяем в нем например -4- на -5-
+        var id = 'id_' + name; //Очевидно
+        $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+        //устанавливаем input'у аттрибуты name и id. Устанавливаем значение  = '', удаляем аттрибут (removeAttr) checked
+    });
+    newElement.find('label').each(function() {  //Находим каждую метку внутри newElement и перебираем
+        var newFor = $(this).attr('for').replace('-' + (total-1) + '-','-' + total + '-');
+        //Находим каждое значение $(this).attr('for') аттрибута for. Меняем в нем например -4- на -5-
+        $(this).attr('for', newFor); //присваиваем каждому for новое значение
+    });
+    total++;    //Прибавляем 1 к общему числу элементов
+    $('#id_' + type + '-TOTAL_FORMS').val(total); //Устанавливаем это значение в рабочий input, из которого считали в начале
+    $(selector).after(newElement); //вставляем созданный после selector, то есть после последней готовой таблицы
+}
+</script>
+
+{% endblock content %}
+
+#**************************************************************
+
+<script>
+$(function(){
+make_it('.comment-complain-form','#comment-complain-ajax-',get_selector_for_comment_complain);
+function get_selector_for_comment_complain(event,selector_basic){
+var comment_id = $(event.target).find('.comment-complain-comment-id').val()
+var level = $(event.target).find('.comment-complain-level').val()
+var selector = selector_basic + comment_id +  '-' + level;
+return selector;
+};
+});
+function make_it(selector1,selector2_basic, func){
+
+$(selector1).live('submit', function(event){
+var selector2 = func(event, selector2_basic);
+$.ajax({
+url: $(event.target).attr('action'),
+type: $(event.target).attr('method'),
+data: $(event.target).serialize(),
+success: function(data){
+$(selector2).html(data)
+},
+error: function(data) {
+}
+});
+return false
+});
+}
+</script>
+
+
+
