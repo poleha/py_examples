@@ -2227,6 +2227,68 @@ ob.test()
 #A
 #B
 #C
+#************************************
+
+class A:
+    def test(self):
+        print('A')
+
+
+class B(A):
+    def test(self):
+        print('B')
+        super().test()
+
+class X:
+    pass
+
+class C(A):
+    def test(self):
+        print('C')
+        super().test()
+
+
+class D(B, X, C):
+    def test(self):
+        print('D')
+        super().test()
+
+
+d = D()
+
+d.test()
+
+#D
+#B
+#C
+#A - A only once, because super() is smart
+#************************************
+
+
+class A:
+    def test(self):
+        print('A')
+
+
+class B(A):
+    def test(self):
+        print('B')
+        super().test()
+
+
+class C(B):
+    def test(self):
+        print('C')
+        super().test()
+
+
+class D(B, C):
+    def test(self):
+        print('D')
+        super().test()
+
+#TypeError: Cannot create a consistent method resolution
+#order (MRO) for bases B, C
 
 #************************************
 
