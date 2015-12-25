@@ -872,6 +872,28 @@ def func(a, b, c=3):
 func(2, 7, c=1.5)
 
 
+#Мой аналог 2 stud:
+def limiter(**limits):
+    def dec(func):
+        all_args = func.__code__.co_varnames[:func.__code__.co_argcount]
+        def wrapper(*args, **kwargs):
+            pos = all_args[:len(args)]
+            attrs_dict = {pos[i]: args[i] for i in range(len(pos))}
+            attrs_dict.update(kwargs)
+            for arg, val in attrs_dict.items():
+                if arg in limits and (val < limits[arg][0] or val > limits[arg][1]):
+                    raise TypeError
+            return func(*args, **kwargs)
+        return wrapper
+    return dec
+
+
+@limiter(a=(1, 5), b=(2, 4))
+def fun(a, b=2):
+    return a + b
+
+
+print(fun(5, b=4))
 
 #**************************************************************
 
@@ -2292,6 +2314,77 @@ class D(B, C):
 
 #************************************
 
+
+class A:
+    def t(self):
+        print('a')
+
+class B(A):
+    def t(self):
+        print('b')
+        super().t()
+
+class Z(B):
+    def t(self):
+        print('z')
+        super().t()
+
+class C(A):
+    def t(self):
+        print('c')
+        super().t()
+
+class X(C):
+    def t(self):
+        print('x')
+        super().t()
+
+
+class Y(X):
+    def t(self):
+        print('y')
+        super().t()
+
+class D(Z, Y):
+    def t(self):
+        print('d')
+        super().t()
+
+d = D()
+d.t()
+
+#d
+#z
+#b
+#y
+#x
+#c
+#a
+
+
+
+
+#***************************************
+class parent(object):
+    def __init__(self): self.__f = 2
+
+    def get(self):
+        return self.__f
+
+class child(parent):
+    def __init__(self):
+        self.__f = 1
+        parent.__init__(self)
+
+    def cget(self):
+        return self.__f
+
+c = child()
+print(c.get()) #2
+print(c.cget()) #1
+print(c.__dict__) # {'_child__f': 1, '_parent__f': 2}
+
+#******************************************
 class A:
     @classmethod
     def test(cls):
@@ -6208,3 +6301,59 @@ print(k)
 k = [x + y if x != 'a' else x for x in 'abc' for y in 'def']
 print(k)
 #['bd', 'be', 'bf', 'cd', 'ce', 'cf']
+
+
+#******************************************
+#stud my
+class Catalog:
+
+    def meth1(self):
+        print('meth1')
+
+    def meth2(self):
+        print('meth2')
+
+    methods = {'method1': meth1, 'method2': meth2}
+
+    def __init__(self, meth):
+        self.meth = self.methods[meth]
+
+    def call_meth(self):
+        return self.meth.__get__(self, Catalog)()
+
+c1 = Catalog('method1')
+
+
+c1.call_meth()
+#'meth1'
+
+#operator.itemgetter stud
+class itemgetter:
+    """
+    Return a callable object that fetches the given item(s) from its operand.
+    After f = itemgetter(2), the call f(r) returns r[2].
+    After g = itemgetter(2, 5, 3), the call g(r) returns (r[2], r[5], r[3])
+    """
+    def __init__(self, item, *items):
+        if not items:
+            def func(obj):
+                return obj[item]
+            self._call = func
+        else:
+            items = (item,) + items
+            def func(obj):
+                return tuple(obj[i] for i in items)
+            self._call = func
+
+    def __call__(self, obj):
+        return self._call(obj)
+
+r = {2: 'x'}
+
+f = itemgetter(2)
+print(f(r)) #x
+
+r = {2: 'x', 3: 'y'}
+
+f = itemgetter(2, 3)
+print(f(r)) #('x', 'y')
