@@ -1,22 +1,41 @@
-def limiter(**limits):
-    def dec(func):
-        all_args = func.__code__.co_varnames[:func.__code__.co_argcount]
-        def wrapper(*args, **kwargs):
-            pos = all_args[:len(args)]
-            attrs_dict = {pos[i]: args[i] for i in range(len(pos))}
-            attrs_dict.update(kwargs)
-            for arg, val in attrs_dict.items():
-                if arg in limits and (val < limits[arg][0] or val > limits[arg][1]):
-                    raise TypeError
-            return func(*args, **kwargs)
-        return wrapper
-    return dec
+import selectors
+import socket
+import asyncio
+asyncio.start_server
 
+sel = selectors.DefaultSelector()
 
-@limiter(a=(1, 5), b=(2, 4))
-def fun(a, b=2):
-    return a + b
+def accept(sock, mask):
+    conn, addr = sock.accept()  # Should be ready
+    print('accepted', conn, 'from', addr)
+    conn.setblocking(False)
+    sel.register(conn, selectors.EVENT_READ, read)
 
+def read(conn, mask):
+    data = conn.recv(1000)  # Should be ready
+    if data:
+        print('echoing', repr(data), 'to', conn)
+        http_response = "Hello, World!"
+        conn.sendall(bytes(http_response, 'utf-8'))
+        sel.unregister(conn)
+        conn.close()
+        print('closing', conn)
 
-print(fun(5, b=4))
+sock = socket.socket()
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+sock.bind(('localhost', 8888))
+sock.listen(100)
+sock.setblocking(False)
+sel.register(sock, selectors.EVENT_READ, accept)
 
+@asyncio.coroutine
+def worker():
+    while True:
+        events = sel.select()
+        for key, mask in events:
+            callback = key.data
+            loop.run_in_executor(None, callback, key.fileobj, mask)
+
+loop = asyncio.get_event_loop()
+asyncio.async(worker())
+loop.run_forever()

@@ -251,3 +251,244 @@ except:
 
 
 #**********************************************
+
+import asyncio
+
+@asyncio.coroutine
+def sub_sleeper(sec):
+    print('starting sub_sleeper', sec)
+    return sec * 3
+
+@asyncio.coroutine
+def sleeper(sec):
+    print('starting sleeper', sec)
+    yield from asyncio.sleep(sec)
+    res = yield from sub_sleeper(sec)
+    print('finished sleeper', sec, res)
+    return sec
+
+@asyncio.coroutine
+def test(sec):
+    response = yield from sleeper(sec)
+    print(response)
+test6 = asyncio.async(test(6))
+
+
+@asyncio.coroutine
+def slow_operation(future):
+    yield from asyncio.sleep(1)
+    print('Finished slow_operation')
+    future.set_result('Future is done!')
+
+loop = asyncio.get_event_loop()
+future = asyncio.Future()
+
+
+loop = asyncio.get_event_loop()
+asyncio.async(slow_operation(future))  #ensure_future in 3.5
+loop.run_until_complete(asyncio.wait([
+                        test(5),
+                        test(3),
+                        test(4),
+                        test(1),
+                        test(2),
+                        test6,
+
+                                    ]))
+print(future.result())
+
+"""
+starting sleeper 6
+starting sleeper 5
+starting sleeper 3
+starting sleeper 4
+starting sleeper 1
+starting sleeper 2
+Finished slow_operation
+starting sub_sleeper 1
+finished sleeper 1 3
+1
+starting sub_sleeper 2
+finished sleeper 2 6
+2
+starting sub_sleeper 3
+finished sleeper 3 9
+3
+starting sub_sleeper 4
+finished sleeper 4 12
+4
+starting sub_sleeper 5
+finished sleeper 5 15
+5
+starting sub_sleeper 6
+finished sleeper 6 18
+6
+Future is done!
+
+"""
+#****************************************************
+import asyncio
+import random
+
+
+urls = ['http://mail.ru', 'http://ag.ru', 'http://lenta.ru']
+
+@asyncio.coroutine
+def get_url(url):
+    wait_time = random.randint(1, 4)
+    yield from asyncio.sleep(wait_time)
+    print('Done: URL {} took {}s to get!'.format(url, wait_time))
+    return url, wait_time
+
+
+@asyncio.coroutine
+def process_as_results_come_in():
+    coroutines = [get_url(url) for url in urls]
+    for coroutine in asyncio.as_completed(coroutines):
+        """
+        Another one is asyncio.as_completed, that takes a list of coroutines and returns an iterator that yields the
+         coroutines in the order in which they are completed, so that when you iterate on it, you get each result as
+         soon as it's available.
+        """
+        url, wait_time = yield from coroutine
+        print('Coroutine for {} is done'.format(url))
+
+
+@asyncio.coroutine
+def process_once_everything_ready():
+    coroutines = [get_url(url) for url in urls]
+    results = yield from asyncio.gather(*coroutines)
+    print(results)
+
+
+def main():
+    loop = asyncio.get_event_loop()
+    print("First, process results as they come in:")
+    loop.run_until_complete(process_as_results_come_in())
+    print("\nNow, process results once they are all ready:")
+    loop.run_until_complete(process_once_everything_ready())
+
+
+if __name__ == '__main__':
+    main()
+
+#********************************** my
+import asyncio
+
+future1 = asyncio.Future()
+future2 = asyncio.Future()
+
+@asyncio.coroutine
+def worker():
+    future3 = loop.run_in_executor(None, non_coroutine_compute, 11000)
+    asyncio.async(compute(future1, 10000)) #async, like new thread
+    asyncio.async(compute(future2, 10))
+    while True:
+        res = yield from simple_compute(50) #like regular func call
+        print(res)
+        try:
+            print(future1.result())
+        except:
+            pass
+        try:
+            print(future2.result())
+        except:
+            pass
+        try:
+            print(future3.result())
+        except:
+            pass
+        yield from asyncio.sleep(3)
+
+@asyncio.coroutine
+def compute(future, val):
+    max = 0
+    for i in range(val):
+        yield
+        for j in range(val-1):
+          #yield from asyncio.sleep(0.00001)
+          if i - j > max:
+              max = i - j
+    future.set_result(max)
+
+@asyncio.coroutine
+def simple_compute(val):
+    max = 0
+    for i in range(val):
+        yield
+        for j in range(val-1):
+          #yield from asyncio.sleep(0.00001)
+          if i - j > max:
+              max = i - j
+    return max
+
+def non_coroutine_compute(val):
+    max = 0
+    for i in range(val):
+        for j in range(val-1):
+          #yield from asyncio.sleep(0.00001)
+          if i - j > max:
+              max = i - j
+    return max
+
+loop = asyncio.get_event_loop()
+#asyncio.async(compute(future1, 100))
+
+
+asyncio.async(worker())
+
+loop.run_forever()
+
+loop.close()
+
+#*************************************
+import asyncio
+from urllib.request import urlopen
+import time
+import selectors
+import sys
+
+start = time.time()
+selector = selectors.DefaultSelector()
+selector.register(sys.stdin, selectors.EVENT_READ)
+
+results = []
+
+@asyncio.coroutine
+def line_reader(data):
+    for line in data:
+        print(line)
+        yield from asyncio.sleep(10)
+
+@asyncio.coroutine
+def reader(url):
+    try:
+        data = urlopen(url)
+        yield from line_reader(data)
+    except ValueError:
+        print('url not found: {}'.format(url))
+
+@asyncio.coroutine
+def counter(id):
+    i = 0
+    while True:
+        i += 1
+        print(id, i)
+        yield from asyncio.sleep(1)
+
+
+
+@asyncio.coroutine
+def worker():
+    while True:
+        for key, mask in selector.select(0):
+            line = key.fileobj.readline().strip()
+            if line == 'exit':
+                loop.close()
+            asyncio.async(reader(line))
+        yield
+
+loop = asyncio.get_event_loop()
+asyncio.async(counter('counter1'))
+asyncio.async(counter('counter2'))
+loop.run_until_complete(worker())

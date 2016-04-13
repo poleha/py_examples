@@ -877,11 +877,10 @@ def limiter(**limits):
     def dec(func):
         all_args = func.__code__.co_varnames[:func.__code__.co_argcount]
         def wrapper(*args, **kwargs):
-            pos = all_args[:len(args)]
-            attrs_dict = {pos[i]: args[i] for i in range(len(pos))}
+            attrs_dict = {all_args[i]: args[i] for i in range(len(args))}
             attrs_dict.update(kwargs)
-            for arg, val in attrs_dict.items():
-                if arg in limits and (val < limits[arg][0] or val > limits[arg][1]):
+            for k, (left, right) in limits.items():
+                if k in attrs_dict and not (left <= attrs_dict[k] <= right):
                     raise TypeError
             return func(*args, **kwargs)
         return wrapper
@@ -893,8 +892,7 @@ def fun(a, b=2):
     return a + b
 
 
-print(fun(5, b=4))
-
+print(fun(1, b=2))
 #**************************************************************
 
 """
