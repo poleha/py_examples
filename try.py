@@ -1,41 +1,56 @@
-import selectors
-import socket
-import asyncio
-asyncio.start_server
+import time
+"""
 
-sel = selectors.DefaultSelector()
+res = 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 ** 4000
 
-def accept(sock, mask):
-    conn, addr = sock.accept()  # Should be ready
-    print('accepted', conn, 'from', addr)
-    conn.setblocking(False)
-    sel.register(conn, selectors.EVENT_READ, read)
+start = time.time()
 
-def read(conn, mask):
-    data = conn.recv(1000)  # Should be ready
-    if data:
-        print('echoing', repr(data), 'to', conn)
-        http_response = "Hello, World!"
-        conn.sendall(bytes(http_response, 'utf-8'))
-        sel.unregister(conn)
-        conn.close()
-        print('closing', conn)
 
-sock = socket.socket()
-sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-sock.bind(('localhost', 8888))
-sock.listen(100)
-sock.setblocking(False)
-sel.register(sock, selectors.EVENT_READ, accept)
+end = time.time()
+timer = end - start
 
-@asyncio.coroutine
-def worker():
-    while True:
-        events = sel.select()
-        for key, mask in events:
-            callback = key.data
-            loop.run_in_executor(None, callback, key.fileobj, mask)
+res = 2
 
-loop = asyncio.get_event_loop()
-asyncio.async(worker())
-loop.run_forever()
+def get_int(s, l):
+    s = bin(s)
+    s = s.lstrip('-0b')
+    right = s[-l:]
+    #right = ''.join(right)
+    return int(right, 2)
+
+
+
+num = get_int(res, 19)
+
+res = 0#int(str(res)[-6:])
+
+print(num, res)
+print(timer)
+
+
+
+
+a = 100000
+b = bin(a)
+b = b.lstrip('-0b')
+print(b) #11000011010100000
+
+a = 999999
+b = bin(a)
+b = b.lstrip('-0b')
+print(b) #11110100001000111111
+
+"""
+
+
+a = 1111111111111111111111111111234567
+b = 11111111111111111111111111111111111234567
+
+c = a * b
+print(c)
+
+a = 1234567
+b = 1234567
+
+c = a * b
+print(c)

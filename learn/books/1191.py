@@ -6355,3 +6355,49 @@ r = {2: 'x', 3: 'y'}
 
 f = itemgetter(2, 3)
 print(f(r)) #('x', 'y')
+
+
+#*************************
+#Первые 127 символов у ut8-8 и ascii совпадают
+s = 'az'
+
+
+b = s.encode('utf-8')
+
+for x in b:
+    print(x)
+
+b = s.encode('ascii')
+
+for x in b:
+    print(x)
+
+#97
+#122
+
+#97
+#122
+
+#*********************************************
+s = 'aя'
+
+b = s.encode('utf-8')
+
+for x in b:
+    print(x)
+#97
+#209
+#143
+
+#На киррилический символ 2 байта
+
+#***************************
+
+s = 'aя'
+
+
+b = s.encode('ascii')
+
+#UnicodeEncodeError: 'ascii' codec can't encode character '\u044f' in position 1: ordinal not in range(128)
+#Эта кодировка ascii использует первые 127 значений.
+
