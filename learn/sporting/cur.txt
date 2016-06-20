@@ -1,1 +1,1 @@
-https://codility.com/programmers/task/max_product_of_three/
+https://codility.com/programmers/task/stone_wall/

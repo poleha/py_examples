@@ -56,41 +56,49 @@ def solution1(A):
                     max_triplet = triplet
     return max_triplet
 
+# O(N * log(N))
 def solution2(A):
-    abs_a = []
+    if len(A) == 3:
+        return A[0] * A[1] * A[2]
+    negatives = []
+    positives = []
+    B = sorted(A)
+    for cur in B:
+        if cur >= 0:
+            positives.append(cur)
+        else:
+            negatives.append(cur)
+    if positives:
+        if len(negatives) > 1:
+            n1 = positives[-1]
+            n2 = negatives[0]
+            n3 = negatives[1]
+            max_triplet1 = n1 * n2 * n3
+        else:
+            max_triplet1 = None
 
-    counters = {i:0 for i in A}
-    for cur in A:
-        counters[cur] += 1
-        abs_a.append(abs(cur))
-
-    abs_a = sorted(abs_a, reverse=True)
-
-    L = len(abs_a)
-    triplets = []
-    for i in range(L - 2):
-        a_p = abs_a[i]
-        a_q = abs_a[i + 1]
-        a_r = abs_a[i + 2]
-        triplet = a_p * a_q * a_r
-        triplets.append((triplet, a_p, a_q, a_r))
-
-    for triplet, a_p, a_q, a_r in triplets:
-        a_p_sign = a_q_sign = a_r_sign = -1
-        if a_p in counters:
-            a_p_sign = 1
-        if a_q in counters:
-            a_q_sign = 1
-        if a_r in counters:
-            a_r_sign = 1
-        triplet_sign = a_p_sign * a_q_sign * a_r_sign
-        if triplet > 0 and triplet_sign > 0:
-            return triplet
+        if len(positives) > 2:
+            n1 = positives[-1]
+            n2 = positives[-2]
+            n3 = positives[-3]
+            max_triplet2 = n1 * n2 * n3
+        else:
+            max_triplet2 = None
+        return max(max_triplet1, max_triplet2)
+    else:
+        n1 = negatives[-1]
+        n2 = negatives[-2]
+        n3 = negatives[-3]
+        return n1 * n2 * n3
 
 
 
 
-A = [-3, 1, 2, -2, 5, 6]
+
+
+
+
+A = [1, -2, -1, 0]
 #A = [-5, -6, -4, -7, -10]
 sol = solution2(A)
 print(sol)
