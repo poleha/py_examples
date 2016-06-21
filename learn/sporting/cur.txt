@@ -1,1 +1,1 @@
-https://codility.com/programmers/task/stone_wall/
+https://codility.com/programmers/task/equi_leader/
