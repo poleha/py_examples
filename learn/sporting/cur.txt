@@ -1,1 +1,1 @@
-https://codility.com/programmers/task/equi_leader/
+https://codility.com/programmers/task/max_profit/
