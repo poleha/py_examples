@@ -1,1 +1,1 @@
-https://codility.com/programmers/task/max_profit/
+https://codility.com/programmers/task/max_double_slice_sum/

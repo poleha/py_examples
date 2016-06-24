@@ -14,3 +14,18 @@ def create_measure(timers):
             return wrapper
         return dec
     return measure
+
+
+def measure(func):
+    key = func.__name__
+    measure.timers[key] = 0
+
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        res = func(*args, **kwargs)
+        end = time.time()
+        measure.timers[key] += end - start
+        return res
+    return wrapper
+
+measure.timers = {}

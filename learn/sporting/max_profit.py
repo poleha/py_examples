@@ -38,3 +38,71 @@ expected worst-case time complexity is O(N);
 expected worst-case space complexity is O(1), beyond input storage (not counting the storage required for input arguments).
 Elements of input arrays can be modified.
 """
+
+from measure import measure
+
+
+# O(N ** 2)
+@measure
+def solution1(A):
+    L = len(A)
+    max_profit = 0
+    for i in range(L - 1):
+        for j in range(i, L):
+            profit = A[j] - A[i]
+            if profit > max_profit:
+                max_profit = profit
+    return max_profit
+
+
+#O(N**2), но в 6 раз быстрее, чем 1
+@measure
+def solution2(A):
+    L = len(A)
+    mins = []
+    maxs = []
+    max_delta = 0
+    for i in range(L):
+        cur = A[i]
+        nex = A[i + 1] if i < L - 1 else cur
+        pre = A[i - 1] if i > 0 else nex
+        if cur <= pre and cur <= nex:
+            mins.append(i)
+        elif cur >= nex and cur >= pre:
+            maxs.append(i)
+    for mn in mins:
+        for mx in maxs:
+            if mn <= mx:
+                cur_delta = A[mx] - A[mn]
+                if cur_delta > max_delta:
+                    max_delta = cur_delta
+    return max_delta
+
+# O(N)
+@measure
+def solution3(A):
+    L = len(A)
+    mn = 0
+    max_delta = 0
+    for i in range(L):
+        cur = A[i]
+        nex = A[i + 1] if i < L - 1 else cur
+        pre = A[i - 1] if i > 0 else nex
+        if cur <= pre and cur <= nex:
+            if A[i] < A[mn]:
+                mn = i
+        elif cur >= nex and cur >= pre:
+            cur_delta = A[i] - A[mn]
+            if cur_delta > max_delta:
+                max_delta = cur_delta
+    return max_delta
+
+
+
+A = [23171, 21011, 21123, 21366, 21013, 21367] * 1000
+
+sol1 = solution1(A)
+sol2 = solution2(A)
+sol3 = solution3(A)
+print(sol1, sol2, sol3, sol1==sol2==sol3, measure.timers)
+#(2160, 2160, 2160, True, {'solution2': 0.1962110996246338, 'solution3': 0.001104116439819336, 'solution1': 1.1574699878692627})
