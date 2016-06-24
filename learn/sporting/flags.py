@@ -66,3 +66,65 @@ expected worst-case space complexity is O(N), beyond input storage (not counting
 Elements of input arrays can be modified.
 
 """
+def get_peaks(A):
+    peaks = []
+    L = len(A)
+    for i in range(1, L - 1):
+        pre = A[i - 1]
+        cur = A[i]
+        nex = A[i + 1]
+        if cur > pre and cur > nex:
+            peaks.append(i)
+    return peaks
+
+
+def get_peaks_len(peaks):
+    return peaks[-1] - peaks[0]
+
+def count_peaks(peaks, i):
+    peaks_len = get_peaks_len(peaks)
+    range_left = peaks_len
+    last_peak = peaks[-1]
+    flag_peak = None
+    flags_left = i
+    while i * (flags_left - 1) <= range_left:
+        for peak in peaks:
+            if flag_peak:
+                range_left = last_peak - peak
+                cur_dist = peak - flag_peak
+            if flag_peak is None or cur_dist >= i:
+                flags_left -= 1
+                flag_peak = peak
+
+            if flags_left == 0:
+                break
+
+        if flags_left == 0:
+            return True
+        return False
+
+def solution(A):
+    L = len(A)
+    if L <= 2:
+        return 0
+    peaks = get_peaks(A)
+    peaks_count = len(peaks)
+    if peaks_count == 0:
+        return 0
+    elif peaks_count == 1:
+        return 1
+    for i in range(peaks_count, 0, -1):
+        res = count_peaks(peaks, i)
+        if res:
+            return i
+    return 0
+
+
+
+#A = [1, 5, 3, 4, 3, 4, 1, 2, 3, 4, 6, 2]
+A = [0, 1, 0, 0, 1, 0, 1, 0, 1, 0]
+#A = [0, 1, 0, 1, 0, 1]
+#A = [1,1,1]
+#A = [1,2, 1]
+sol = solution(A)
+print(sol)
