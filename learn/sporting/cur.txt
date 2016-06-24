@@ -1,1 +1,1 @@
-https://codility.com/programmers/task/max_double_slice_sum/
+https://codility.com/programmers/task/flags/
