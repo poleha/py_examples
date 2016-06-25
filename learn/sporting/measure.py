@@ -19,13 +19,16 @@ def create_measure(timers):
 def measure(func):
     key = func.__name__
     measure.timers[key] = 0
+    measure.calls[key] = 0
 
     def wrapper(*args, **kwargs):
         start = time.time()
         res = func(*args, **kwargs)
         end = time.time()
         measure.timers[key] += end - start
+        measure.calls[key] += 1
         return res
     return wrapper
 
 measure.timers = {}
+measure.calls = {}

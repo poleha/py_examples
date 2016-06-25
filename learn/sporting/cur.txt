@@ -1,1 +1,1 @@
-https://codility.com/programmers/task/flags/
+https://codility.com/programmers/task/count_non_divisible/
