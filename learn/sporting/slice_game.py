@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 https://codility.com/programmers/custom_challenge/scandium2016/
 Even sums is a game for two players. Players are given a sequence of N positive integers and take turns alternately. In each turn, a player chooses a non-empty slice (a subsequence of consecutive elements) such that the sum of values in this slice is even, then removes the slice and concatenates the remaining parts of the sequence. The first player who is unable to make a legal move loses the game.

@@ -1,1 +1,17 @@
-https://codility.com/programmers/task/count_non_divisible/
+https://codility.com/media/train/10-Gcd.pdf > euclidean_algorithm.py
+
+Разобрать!
+
+https://codility.com/programmers/task/chocolates_by_numbers/
+
+
+
+
+Below 100%:
+
+slice_game.py
+https://codility.com/programmers/custom_challenge/scandium2016/
+
+
+bound_slice.py
+https://codility.com/programmers/task/count_bounded_slices/

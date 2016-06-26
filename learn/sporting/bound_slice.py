@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import random
 import math
 #A = [3, 5, 7, 6, 3]

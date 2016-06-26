@@ -49,3 +49,121 @@ expected worst-case time complexity is O(N*log(N));
 expected worst-case space complexity is O(N), beyond input storage (not counting the storage required for input arguments).
 Elements of input arrays can be modified.
 """
+
+from measure import measure
+import random
+
+# O(N ** 2)
+@measure
+def solution1(A):
+    res = []
+    for cur in A:
+        count = 0
+        for comp in A:
+            if cur % comp != 0:
+                count += 1
+        res.append(count)
+    return res
+
+#*****************************************
+
+# O(N ** 2) A little bit faster(way faster on repeated numbers)
+from math import ceil
+@measure
+def solution2(A):
+    L = len(A)
+    B = sorted(A)
+    res = []
+    visited = {}
+    counts = {}
+    for cur in A:
+        counts[cur] = counts[cur] + 1 if cur in counts else 1
+    for cur in A:
+        count = visited.get(cur, None)
+        if count is None:
+            count = 0
+            left = L
+            for comp in B:
+                if comp > ceil(cur / 2):
+                    minus = counts.get(cur, 0)
+                    left -= minus
+                    count += left
+                    break
+                elif cur % comp != 0:
+                    count += 1
+                left -= 1
+            res.append(count)
+            visited[cur] = count
+        else:
+            res.append(count)
+    return res
+
+#********************************
+
+from math import sqrt, ceil
+
+
+def get_divisors(N):
+    n = int(ceil(sqrt(N)))
+    divs = set()
+    for i in range(1, n + 1):
+        if N % i != 0:
+            continue
+        res = N / i
+        divs.add(i)
+        divs.add(res)
+    return divs
+
+@measure
+def solution3(A):
+    L = len(A)
+    counts = {}
+    divs = {}
+    for cur in A:
+        counts[cur] = counts[cur] + 1 if cur in counts else 1
+        if cur not in divs:
+            divs[cur] = get_divisors(cur)
+
+    res_dict = {}
+    for cur in A:
+        left = L
+        if cur in res_dict:
+            continue
+        for div in divs[cur]:
+            count = counts.get(div, 0)
+            left -= count
+        res_dict[cur] = left
+
+    res = []
+    for cur in A:
+        res.append(res_dict[cur])
+    return res
+
+
+
+
+
+"""
+A = [3, 1, 2,3, 6, 4]
+sol2 = solution2(A)
+sol3 = solution3(A)
+print(sol2, sol3)
+
+"""
+A = list(range(1, 10000))
+random.shuffle(A)
+sol1= solution1(A)
+sol2 = solution2(A)
+sol3 = solution3(A)
+print(sol1 == sol2 == sol3)
+print(measure.timers)
+
+
+
+
+
+
+
+
+
+
