@@ -1,56 +1,25 @@
-import time
-"""
 
-res = 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 ** 4000
+def eq(a, b):
 
-start = time.time()
+    k = 1
+    while a & 1 == 0 and b & 1 == 0:
+        a >>= 1
+        b >>= 1
+        k <<= 1
+    print(a, b, k)
 
+    t = a if a & 1 == 0 else -b
 
-end = time.time()
-timer = end - start
-
-res = 2
-
-def get_int(s, l):
-    s = bin(s)
-    s = s.lstrip('-0b')
-    right = s[-l:]
-    #right = ''.join(right)
-    return int(right, 2)
-
-
-
-num = get_int(res, 19)
-
-res = 0#int(str(res)[-6:])
-
-print(num, res)
-print(timer)
+    while t:
+        while t & 1 == 0:
+            t >>= 1
+        if t > 0:
+            a = t
+        else:
+            b = -t
+        t = a - b
+    return a * k
 
 
-
-
-a = 100000
-b = bin(a)
-b = b.lstrip('-0b')
-print(b) #11000011010100000
-
-a = 999999
-b = bin(a)
-b = b.lstrip('-0b')
-print(b) #11110100001000111111
-
-"""
-
-
-a = 1111111111111111111111111111234567
-b = 11111111111111111111111111111111111234567
-
-c = a * b
-print(c)
-
-a = 1234567
-b = 1234567
-
-c = a * b
-print(c)
+sol = eq(24, 9)
+print(sol)
