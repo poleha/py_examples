@@ -1,9 +1,5 @@
-https://codility.com/media/train/10-Gcd.pdf > euclidean_algorithm.py
-
-Разобрать!
-
-https://codility.com/programmers/task/chocolates_by_numbers/
-
+https://codility.com/media/train/11-Fibonacci.pdf
+https://codility.com/programmers/task/ladder/
 
 
 

@@ -23,4 +23,49 @@ that, given two positive integers N and M, returns the number of chocolates that
 For example, given integers N = 10 and M = 4. the function should return 5, as explained above.
 
 """
+from measure import measure
+
+# Too long
+@measure
+def solution1(N, M):
+    visited = set()
+    i = 0
+    while True:
+        if i in visited:
+            return len(visited)
+        visited.add(i)
+        i += M
+        if i >= N:
+            i = i % N
+
+
+#*****************
+
+def get_greatest_divisor(a, b):
+    if b > a:
+        a, b = b, a
+
+    m = a % b
+    if m == 0:
+        return b
+    else:
+        return get_greatest_divisor(b, m)
+
+
+@measure
+def solution2(N, M):
+    gd = get_greatest_divisor(N, M)
+    return N / gd
+
+
+N = 10 ** 8
+M = 235
+
+sol1 = solution1(N, M)
+sol2 = solution2(N, M)
+print(sol1, sol2)
+print(measure.timers)
+#{'solution2': 5.9604644775390625e-06, 'solution1': 4.3866589069366455}
+
+
 

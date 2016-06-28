@@ -1,25 +1,34 @@
+def get_primes(N):
+    primes = []
+    visited = set()
+    i = 1
+    while i < N:
+        i += 1
+        if i in visited:
+            continue
+        j = i
+        first = True
+        primes.append(i)
+        while j <= N:
+            visited.add(j)
 
-def eq(a, b):
-
-    k = 1
-    while a & 1 == 0 and b & 1 == 0:
-        a >>= 1
-        b >>= 1
-        k <<= 1
-    print(a, b, k)
-
-    t = a if a & 1 == 0 else -b
-
-    while t:
-        while t & 1 == 0:
-            t >>= 1
-        if t > 0:
-            a = t
-        else:
-            b = -t
-        t = a - b
-    return a * k
+            if first:
+                j *= j
+                first = False
+            else:
+                j += i
+    return primes
 
 
-sol = eq(24, 9)
-print(sol)
+
+
+
+
+
+
+
+for j in get_primes(25):
+    print(j)
+
+
+

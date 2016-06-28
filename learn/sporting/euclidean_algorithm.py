@@ -64,44 +64,42 @@ def gcd_iter(u, v):
 
 
 # *****************************************
-#Iterative binary algorithm
-def gcd_bin(u, v):
-    u, v = abs(u), abs(v)  # u >= 0, v >= 0
-    if u < v:
-        u, v = v, u  # u >= v >= 0
-    if v == 0:
-        return u
+# binary GCD algorithm (my)
+# https://en.wikipedia.org/wiki/Binary_GCD_algorithm
+"""
+The algorithm reduces the problem of finding the GCD by repeatedly applying these identities:
 
-    # u >= v > 0
-    k = 1
-    while u & 1 == 0 and v & 1 == 0:  # u, v - even
-        u >>= 1 # 12 6
-        v >>= 1 # 10  5
-        k <<= 1 # 2  4  ... 8 ... 16
-        # Делим на 2, на 4, на 8 и так далее, пока не получим нечетное. к - это число, на которое разделили
-
-    t = -v if u & 1 else u # u & 1 - нечет, odd
-    # Если u(большее) четно, то t = u, иначе t = -v
-    while t:
-        while t & 1 == 0: # Пока четно
-            t >>= 1 #Делим на 2 нацело пока не получим нечетного
-
-        # Если делили u
-        if t > 0:
-            u = t
-
-        # Если делили v
-        else:
-            v = -t
-        t = u - v
-        # Находим результат вычитания. Тут деленным на 2 до нечетного может быть левая или правая часть
+gcd(0, v) = v, because everything divides zero, and v is the largest number that divides v. Similarly, gcd(u, 0) = u. gcd(0, 0) is not typically defined, but it is convenient to set gcd(0, 0) = 0.
+If u and v are both even, then gcd(u, v) = 2·gcd(u/2, v/2), because 2 is a common divisor.
+If u is even and v is odd, then gcd(u, v) = gcd(u/2, v), because 2 is not a common divisor. Similarly, if u is odd and v is even, then gcd(u, v) = gcd(u, v/2).
+If u and v are both odd, and u ≥ v, then gcd(u, v) = gcd((u − v)/2, v). If both are odd and u < v, then gcd(u, v) = gcd((v − u)/2, u). These are combinations of one step of the simple Euclidean algorithm, which uses subtraction at each step, and an application of step 3 above. The division by 2 results in an integer because the difference of two odd numbers is even.[3]
+Repeat steps 2–4 until u = v, or (one more step) until u = 0. In either case, the GCD is 2kv, where k is the number of common factors of 2 found in step 2.
+The algorithm requires O(n2)[4] worst-case time, where n is the number of bits in the larger of the two numbers. Although each step reduces at least one of the operands by at least a factor of 2, the subtract and shift operations take linear time for very large integers (although they're still quite fast in practice, requiring about one operation per word of the representation).
 
 
-        print(u, v, t)
-        #(3, 5, -2)
-        #(3, 1, 2)
-        #(1, 1, 0)
-    return u * k
+"""
+def eq(a, b, k=1):
+    if a == 0:
+        return k * b
+    if b == 0:
+        return k * a
+    if a == b:
+        return k * a
 
-sol = gcd_bin(24, 20)
-print(sol)
+    a = abs(a)
+    b = abs(b)
+
+    if b > a:
+        a, b = b, a
+
+    while a & 1 == 0 and b & 1 == 0:
+        a = a / 2
+        b = b / 2
+        k *= 2
+
+    if a & 1 == 0 and b & 1 == 1:
+        return eq(a / 2, b, k)
+    elif a & 1 == 1 and b & 1 == 0:
+        return eq(a, b / 2, k)
+    else: # a & 1 == 1 and b & 1 == 1
+        return  eq((a - b) / 2, b, k)
