@@ -1,6 +1,4 @@
-https://codility.com/media/train/11-Fibonacci.pdf
-https://codility.com/programmers/task/ladder/
-
+https://codility.com/programmers/task/fib_frog/
 
 
 Below 100%:
