@@ -1,5 +1,4 @@
-https://codility.com/programmers/task/fib_frog/
-
+https://codility.com/programmers/task/nailing_planks/
 
 Below 100%:
 
