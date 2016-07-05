@@ -1,4 +1,4 @@
-https://codility.com/programmers/task/nailing_planks/
+https://codility.com/programmers/task/abs_distinct/
 
 Below 100%:
 
