@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="194cded0-b00c-4ca9-943b-75acd8eac8c3" name="Default" comment="new tasks">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/learn/sporting/abs_distinct.py" />
+    <list default="true" id="194cded0-b00c-4ca9-943b-75acd8eac8c3" name="Default" comment="">
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/learn.iml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/learn/sporting/cur.txt" afterPath="$PROJECT_DIR$/learn/sporting/cur.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/learn/sporting/nailing_planks.py" afterPath="$PROJECT_DIR$/learn/sporting/nailing_planks.py" />
     </list>
     <ignored path="learn.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -145,16 +142,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="315">
               <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="workspace.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -833,7 +820,14 @@
       <option name="project" value="LOCAL" />
       <updated>1467443413794</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="new tasks&#10;removed redundant files">
+      <created>1467720208058</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1467720208058</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -878,7 +872,8 @@
     <MESSAGE value="Initial" />
     <MESSAGE value="fix" />
     <MESSAGE value="new tasks" />
-    <option name="LAST_COMMIT_MESSAGE" value="new tasks" />
+    <MESSAGE value="new tasks&#10;removed redundant files" />
+    <option name="LAST_COMMIT_MESSAGE" value="new tasks&#10;removed redundant files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
