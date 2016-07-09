@@ -61,13 +61,14 @@ def solution1(A):
 #****************************************
 
 @measure
+#O(N ** 3)
 def solution2(A):
     L = len(A)
     A = sorted(A, reverse=True)
     count = 0
     for i in xrange(L - 2):
         base = A[i]
-        for back in range(i + 1, L - 1):
+        for back in xrange(i + 1, L - 1):
             tail = A[back]
             forward = back + 1
             while forward < L:
@@ -75,13 +76,16 @@ def solution2(A):
                 if tail + head > base:
                     count += 1
                     forward += 1
+                    #print base, tail, head, 'ok'
                 else:
+                    #print base, tail, head, 'wrong'
                     break
     return count
 
 
 
 @measure
+#O(N ** 3)
 def solution3(A):
     L = len(A)
     A = sorted(A)
@@ -107,47 +111,42 @@ def solution3(A):
             back += 1
         i -= 1
     return count
+#*******************************
 
-
+#stud O(N ** 2)
 @measure
 def solution4(A):
     L = len(A)
     A = sorted(A)
     count = 0
-    i = L - 1
-    while i > 1:
+
+    for i in range(L - 1, 1, -1):
         base = A[i]
-        skip = False
-        back = 0
-        while back < i - 1:
-            tail = A[back]
-            if not skip:
-                forward = back + 1
-            while forward < i:
-                head = A[forward]
-                if base >= tail + head:
-                    forward +=1
-                else:
-                    a = forward - back
-                    print base, tail, head, a
-                    skip = True
-                    count += forward - back
-                    break
-            if skip:
-                break
-
-            back +=1
-        i -= 1
-
-
+        j = 0
+        k = i - 1
+        while j < k:
+            a = A[j]
+            b = A[k]
+            if a + b > base:
+                count += (k - j)
+                k -= 1
+            else:
+                j += 1
     return count
 
 
 
 
-#A =  list(range(400))
-A  = [1, 2, 3, 4, 5, 6, 9, 10]
-sol1 = solution1(A)
+
+
+
+
+
+
+A =  list(range(1, 1000, 2))
+#A  = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+#A = [1, 2, 5, 9, 12, 16, 21]
+#sol1 = solution1(A)
 print('***************')
 sol2 = solution2(A)
 sol3 = solution3(A)

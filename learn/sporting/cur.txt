@@ -1,4 +1,4 @@
-https://codility.com/programmers/task/count_triangles/
+https://codility.com/programmers/task/min_abs_sum_of_two/
 
 
 
