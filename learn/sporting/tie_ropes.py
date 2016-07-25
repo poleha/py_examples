@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+https://codility.com/programmers/task/tie_ropes/
 There are N ropes numbered from 0 to N − 1, whose lengths are given in a zero-indexed array A, lying on the floor in a line. For each I (0 ≤ I < N), the length of rope I on the line is A[I].
 
 We say that two ropes I and I + 1 are adjacent. Two adjacent ropes can be tied together with a knot, and the length of the tied rope is the sum of lengths of both ropes. The resulting new rope can then be tied again.
@@ -53,3 +54,20 @@ expected worst-case space complexity is O(N), beyond input storage (not counting
 Elements of input arrays can be modified.
 """
 
+def solution(K, A):
+    count = 0
+    cur = 0
+    for a in A:
+        cur += a
+        if cur >= K:
+            count += 1
+            cur = 0
+    return count
+
+
+
+A = [1, 2, 3, 4, 1, 1, 3]
+
+sol = solution(4, A)
+
+print(sol)
