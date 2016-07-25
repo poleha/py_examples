@@ -49,6 +49,47 @@ expected worst-case space complexity is O(N), beyond input storage (not counting
 Elements of input arrays can be modified.
 """
 
-def solution(A):
-    # write your code in Python 2.7
-    pass
+#O(N ** 2)
+def solution1(A):
+    L = len(A)
+    min_sum = None
+    for i in xrange(L):
+        for j in xrange(L):
+            a = A[i]
+            b = A[j]
+            s = abs(a + b)
+            if min_sum is None or s < min_sum:
+                min_sum = s
+    return min_sum
+
+
+# O(N * log(N))
+def solution2(A):
+    A = sorted(A)
+    L = len(A)
+
+    left_pos = 0
+    right_pos = L - 1
+    min_sum = None
+    while left_pos <= right_pos:
+        left = A[left_pos]
+        right = A[right_pos]
+        s = abs(left + right)
+        if min_sum is None or s < min_sum:
+            min_sum = s
+        if abs(left) >= abs(right):
+            left_pos += 1
+        else:
+            right_pos -= 1
+
+    return min_sum
+
+
+
+#A = [1, 4, -3]
+A = [-8, 4, 5, -10, 3]
+#A = [8]
+
+sol1 = solution1(A)
+sol2 = solution2(A)
+print sol1, sol2

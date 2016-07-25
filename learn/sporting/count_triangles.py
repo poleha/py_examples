@@ -120,7 +120,7 @@ def solution4(A):
     A = sorted(A)
     count = 0
 
-    for i in range(L - 1, 1, -1):
+    for i in xrange(L - 1, 1, -1):
         base = A[i]
         j = 0
         k = i - 1

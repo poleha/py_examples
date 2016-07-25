@@ -1,4 +1,5 @@
-https://codility.com/programmers/task/min_abs_sum_of_two/
+https://codility.com/media/train/14-GreedyAlgorithms.pdf
+https://codility.com/programmers/task/tie_ropes/
 
 
 
