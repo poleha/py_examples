@@ -40,3 +40,28 @@ expected worst-case space complexity is O(N), beyond input storage (not counting
 Elements of input arrays can be modified.
 """
 
+
+
+def solution(A, B):
+    L = len(A)
+    count = 0
+    prev_b = None
+    for i in xrange(L):
+        a = A[i]
+        b = B[i]
+        if i == 0 or (prev_b is not None and a > prev_b):
+            count += 1
+            prev_b = b
+
+    return count
+
+
+#A = [1, 3, 4, 7, 9, 9]
+#B = [5, 6, 7, 8, 9, 10]
+
+A = [0, 2, 100]
+B = [0, 50, 1000]
+
+sol = solution(A, B)
+
+print sol

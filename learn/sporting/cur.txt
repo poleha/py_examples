@@ -1,5 +1,5 @@
-https://codility.com/media/train/14-GreedyAlgorithms.pdf
-https://codility.com/programmers/task/tie_ropes/
+https://codility.com/media/train/15-DynamicProgramming.pdf
+https://codility.com/programmers/task/number_solitaire/
 
 
 
