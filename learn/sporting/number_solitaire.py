@@ -52,3 +52,43 @@ expected worst-case space complexity is O(N), beyond input storage (not counting
 Elements of input arrays can be modified.
 
 """
+
+from math import ceil
+
+def solution(A):
+
+    res = A[0]
+    A = A[1:]
+    A = sorted(A, reverse=True)
+    L = len(A)
+
+    min_steps = int(ceil((L - 1) / float(6)))
+    max_steps = L
+    step = 0
+
+    i = 0
+
+    for i in xrange(L):
+        a = A[i]
+        step += 1
+        if step > max_steps:
+            break
+        if a > 0:
+            res += a
+        else:
+            if step > min_steps:
+                break
+            else:
+
+
+    if i < L - 1:
+        res += A[-1]
+
+    return res
+
+#A = [1, -2, 0, 9, -1, -2]
+A = [-4, -10, -7]
+
+sol = solution(A)
+
+print sol
