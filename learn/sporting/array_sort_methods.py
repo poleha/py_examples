@@ -96,18 +96,13 @@ more at http://en.wikipedia.org/wiki/Merge_sort).
 
 #stud
 @measure()
-def merge_sort(A, initial=True):
-    if initial:
-        counters = {}
-        for cur in A:
-            counters[cur] = counters[cur] + 1 if cur in counters else 1
-        A = list(set(A))
+def merge_sort(A):
 
     L = len(A)
     mid = L // 2
     if L > 1:
-        left = merge_sort(A[:mid], False)
-        right = merge_sort(A[mid:], False)
+        left = merge_sort(A[:mid])
+        right = merge_sort(A[mid:])
 
         left_L = len(left)
         right_L = len(right)
@@ -132,15 +127,7 @@ def merge_sort(A, initial=True):
     else:
         res = A
 
-    if initial:
-        final_res = []
-        for cur in res:
-            for i in xrange(counters[cur]):
-                final_res.append(cur)
-        return final_res
-
-    else:
-        return res
+    return res
 
 
 
