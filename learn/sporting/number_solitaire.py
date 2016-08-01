@@ -53,41 +53,26 @@ Elements of input arrays can be modified.
 
 """
 
-from math import ceil
+#from collections import deque
 
 def solution(A):
-
-    res = A[0]
-    A = A[1:]
-    A = sorted(A, reverse=True)
+    steps = {}
     L = len(A)
-
-    min_steps = int(ceil((L - 1) / float(6)))
-    max_steps = L
-    step = 0
-
-    i = 0
-
     for i in xrange(L):
         a = A[i]
-        step += 1
-        if step > max_steps:
-            break
-        if a > 0:
-            res += a
-        else:
-            if step > min_steps:
-                break
-            else:
+        start = max(0, i - 6)
+        m = None
+        for j in xrange(start, i):
+            if m is None or steps[j] > m:
+                m = steps[j]
+        if m is None:
+            m = 0
 
+        steps[i] = m + a
+    return steps[L - 1]
 
-    if i < L - 1:
-        res += A[-1]
-
-    return res
-
-#A = [1, -2, 0, 9, -1, -2]
-A = [-4, -10, -7]
+A = [1, -2, 0, 9, -1, -2]
+#A = [-4, -10, -7]
 
 sol = solution(A)
 
