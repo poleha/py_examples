@@ -1,4 +1,3 @@
-https://codility.com/media/train/15-DynamicProgramming.pdf
 https://codility.com/programmers/task/number_solitaire/
 
 

@@ -20,7 +20,7 @@ from measure import create_measure
 timers = {}
 measure = create_measure(timers)
 
-A = [2, 5, 4, 8, 9, 0, 3] * 5000
+
 
 @measure()
 def simple_sort(A):
@@ -59,7 +59,7 @@ def counting_sort(A): # My
     return res
 
 # Только с положительными, нужно знать разброс от минимального к максимальному. Мой метод лучше. Но питон делает быстрее )))
-@measure()
+#@measure()
 def counting_sort_examlpe(A, k):
     n = len(A)
     count = [0] * (k + 1)
@@ -94,6 +94,7 @@ O(n) time. The number of levels is O(log n), so the total time complexity is O(n
 more at http://en.wikipedia.org/wiki/Merge_sort).
 """
 
+#stud
 @measure()
 def merge_sort(A, initial=True):
     if initial:
@@ -102,39 +103,77 @@ def merge_sort(A, initial=True):
             counters[cur] = counters[cur] + 1 if cur in counters else 1
         A = list(set(A))
 
-    l = len(A)
-    mid = l // 2
-    if l > 1:
+    L = len(A)
+    mid = L // 2
+    if L > 1:
         left = merge_sort(A[:mid], False)
         right = merge_sort(A[mid:], False)
-        first_left = left[0]
-        first_right = right[0]
-        if first_left < first_right:
-            res = left + right
-        else:
-            res = right + left
+
+        left_L = len(left)
+        right_L = len(right)
+
+        res = []
+        left_index = 0
+        right_index = 0
+        while left_index < left_L and right_index < right_L:
+            l = left[left_index]
+            r = right[right_index]
+            if l < r:
+                res.append(l)
+                left_index += 1
+            else:
+                res.append(r)
+                right_index += 1
+        if left_index < left_L:
+            res += left[left_index:]
+        if right_index < right_L:
+            res += right[right_index:]
+
     else:
-        return A
-    if not initial:
-        return res
-    else:
+        res = A
+
+    if initial:
         final_res = []
         for cur in res:
-            count = counters[cur]
-            for i in range(count):
+            for i in xrange(counters[cur]):
                 final_res.append(cur)
         return final_res
+
+    else:
+        return res
 
 
 
 #{'counting_sort_examlpe': 0.0036950111389160156, 'counting_sort': 0.006501197814941406, 'python_sort': 0.0004951953887939453, 'simple_sort': 33.34170198440552, 'merge_sort': 0.00534820556640625}
 #print res4
 
-res0 =simple_sort(A)
-res1 =counting_sort(A)
-res2 = counting_sort_examlpe(A, 9)
+from random import shuffle
+
+A = list(range(1000)) * 3
+shuffle(A)
+
+res0 = simple_sort(A)
+
+A = list(range(1000)) * 3
+shuffle(A)
+
+res1 = counting_sort(A)
+
+A = list(range(1000)) * 3
+shuffle(A)
+
+res2 = counting_sort_examlpe(A, 1000)
+
+A = list(range(1000)) * 3
+shuffle(A)
+
 res3 = python_sort(A)
+
+A = list(range(1000)) * 3
+shuffle(A)
+
 res4 = merge_sort(A)
+
 print(res0 == res1 == res2 == res3 == res4)
 #print(res0, res1, res2, res3, res4)
 print(timers)
