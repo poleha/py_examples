@@ -1,4 +1,6 @@
 import time
+from collections import OrderedDict
+
 
 def measure(func):
     key = func.__name__
@@ -14,8 +16,8 @@ def measure(func):
         return res
     return wrapper
 
-measure.timers = {}
-measure.calls = {}
+measure.timers = OrderedDict()
+measure.calls = OrderedDict()
 
 
 class MeasureBlock:

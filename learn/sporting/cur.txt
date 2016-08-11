@@ -1,5 +1,4 @@
-https://codility.com/programmers/task/number_solitaire/
-
+https://codility.com/programmers/task/min_abs_sum/
 
 
 Below 100%:
