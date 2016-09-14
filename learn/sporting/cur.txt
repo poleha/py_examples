@@ -1,10 +1,16 @@
-https://codility.com/programmers/task/min_abs_sum/
+https://codility.com/programmers/task/brackets_rotation/
+
+
 
 
 Below 100%:
 
+min_abs_sum.py
+https://codility.com/programmers/task/min_abs_sum/
+
 slice_game.py
 https://codility.com/programmers/custom_challenge/scandium2016/
+
 
 
 bound_slice.py

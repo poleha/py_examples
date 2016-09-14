@@ -40,7 +40,7 @@ class MeasureBlock:
 
 
 #************************************
-# Backwart compatibility
+# Backward compatibility
 
 def create_measure(timers):
     def measure(timer_name = None):
