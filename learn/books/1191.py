@@ -5656,3 +5656,241 @@ b = s.encode('ascii')
 #UnicodeEncodeError: 'ascii' codec can't encode character '\u044f' in position 1: ordinal not in range(128)
 #Эта кодировка ascii использует первые 127 значений.
 
+#********************************************************
+
+# Naive encoding and decoding. Should find 20 vinutes to improve.
+
+table = {
+    'ʠ': '02A0',
+    'ʛ': '029B'
+}
+
+
+
+reversed_table = {v: k for k, v in table.items()}
+
+def get_bytes_count(number):
+    # В зависимости от номера символу выделяется определенное количество байт
+    return 2
+
+def encode(s):
+    number = table[s]  # Можно еще number = ord(c]
+    length = get_bytes_count(number)
+    i = int(number, 16)
+    b = "{0:b}".format(i)
+    if length == 2:
+        first_byte = '110'
+        second_byte = '10'
+        right = b[-6:]
+        left = b[:-6]
+        second_byte += right
+
+        zeros = 5 - len(left)
+        left = '0' * zeros + left
+        first_byte += left
+        return first_byte, second_byte
+
+
+encoded = encode('ʛ')
+print(encoded)
+
+test = 'ʛ'.encode()
+for b in test:
+    print("{0:b}".format(b))
+
+
+def decode(b):
+    first_byte = b[0]
+    if first_byte[:3] == '110':
+        second_byte = b[1]
+        binary_number = first_byte[3:] + second_byte[2:]
+        int_number = int(binary_number, 2)
+        hex_number = hex(int_number).upper()
+        hex_number = hex_number[0] + hex_number[2:]
+        return reversed_table[hex_number]
+
+print(decode(encoded))
+
+#*************************************************
+
+
+s = b'Alex' #Bytes representation of a string
+
+for b in s:
+    print(b, end=' ') # 65 108 101 120
+
+ba = bytearray(s)
+
+ba.append(100)
+print(ba) #bytearray(b'Alexd')
+
+#**********************************************
+
+
+import binascii
+
+
+print(ord('A')) # 65 Номер в таблице utf - 8 по порядку в десятичной
+print(binascii.hexlify(b'A'))  # b'41' hex representation
+
+print(hex(65)) # 0x41
+print(int('41',16)) #65
+
+print(binascii.unhexlify('41')) #b'A'
+
+k = binascii.hexlify(b'Alex')
+print(k) #416c6578
+
+m = int(k, 16)
+l = hex(m)
+print(l) #0x416c6578
+
+
+
+a = 0x8F7A93
+print(a) #9403027
+
+k = bin(a)
+print(k) #0b100011110111101010010011
+print(type(k)) #<class 'str'>
+
+
+#****************************************
+
+
+
+x = 1e200
+y = x * x
+print(y) # inf
+
+z = y / y
+print(z) # nan
+
+
+x = 10**200
+print(x) #100000000000000000000000000000000000000000000000000000000000000000.......
+y = (x + 0.5) * x # Без 0.5 будет ок
+print(y) #inf
+
+#z = x * x + 0.5 OverflowError: int too large to convert to float
+
+
+#*********************
+
+x = 0x100 #octal, 16, hex
+print(x) #256
+
+y = 0o100 # 8, octal
+print(y) #64
+
+z = 0b100 #binary
+print(z) #4
+
+#***************************
+
+
+print(0b110 & 0b001) # 0
+print(0b111 & 0b111) #7, то есть 111
+
+
+print(0b110 | 0b001) #7
+print(bin(7)) #0b111
+
+print(0b110 ^ 0b001) # Только 0 1 или 1 0, Xor... Результат 7
+
+print(~ 0b001) # Not, -2
+
+"""
+1 is 0000 00001
+~ 0000 00001 is 1111 1110, which is -2
+https://ru.wikipedia.org/wiki/Дополнительный_код_(представление_числа)
+"""
+
+print(bin(-2)) #-0b10
+print(int('0b001', 2)) #1]
+print(~ 1) #-2
+print(~ 0b0110) #-7
+print(bin(-7)) #-0b111
+
+
+# Shifting
+
+
+k = 0b100
+print(k) #4
+k = k << 1
+print(k) #8, 0100 => 1000
+
+k = k >> 2
+print(k) #2 1000 =? 0010
+
+
+#setting and clearing
+
+x = 0b1010101
+mask = 0b0100000
+
+
+x = x | mask
+print(bin(x)) #0b1110101
+
+mask = 0b0010000
+mask = ~mask
+print(bin(mask)) #-0b10001 or 1101111, so remove only one byte
+x = x & mask
+print(bin(x)) #0b1100101
+
+#*********************************
+# Boolean flags
+
+X = 0x01
+Y = 0x02
+Z = 0x04
+#Thats is 0b0xyz with x, y, z having values in (0,1)  : X = 0x01, Y = 0x02, Z = 0x04
+
+T = 0x03
+print(bin(T)) #'0b11'
+print(T & X) # 1
+print(T & Y) # 2
+print(T & Z) # 0
+
+T = 0b101
+print(T & X) # 1
+print(T & Y) # 0
+print(T & Z) # 4
+
+#***********************************************
+print(b'abc' == 'abc'.encode()) #True
+
+#*******************************************
+
+import struct
+import binascii
+
+values = (1, b'ab', 2.7)
+s = struct.Struct('I 2s f') # Integer, 2 strings, float
+packed_data = s.pack(*values)
+
+print('Original values:', values)
+print('Format string  :', s.format)
+print('Uses           :', s.size, 'bytes')
+print('Packed Value   :', binascii.hexlify(packed_data))
+
+#Original values: (1, b'ab', 2.7)
+#Format string  : b'I 2s f'
+#Uses           : 12 bytes
+#Packed Value   : b'0100000061620000cdcc2c40' # Это не utf-8, а шестнадцатиричное представление, потому
+# превратить в байты через binascii.unhexlify. Обычно расчет на utf-8 (b'abc' == 'abc'.encode())
+
+unpacked = s.unpack(packed_data)
+print(unpacked) # (1, b'ab', 2.700000047683716)
+
+
+packed_data = binascii.unhexlify('0100000061620000cdcc2c40')
+
+s = struct.Struct('I 2s f')
+unpacked_data = s.unpack(packed_data)
+print('Unpacked Values:', unpacked_data)
+
+
+#********************

@@ -33,11 +33,12 @@ expected worst-case space complexity is O(N) (not counting the storage required 
 
 
 from measure import measure
+from collections import deque
 
 # Correct but slow
 def get_errors(S, L):
     errors = []
-    open = []
+    open = deque()
     open_count = 0
     for i in xrange(L):
         cur = S[i]
@@ -50,7 +51,8 @@ def get_errors(S, L):
             else:
                 open_count -= 1
                 open.pop()
-    return errors + open
+    return errors + list(open)
+
 
 
 def get_sum(errors, L):
@@ -157,7 +159,7 @@ def solution1(S, K):
 
 def get_errors2(S, L):
     errors = []
-    open = []
+    open = deque()
     open_count = 0
     for i in xrange(L):
         cur = S[i]
@@ -170,17 +172,16 @@ def get_errors2(S, L):
             else:
                 open_count -= 1
                 open.pop()
-    return errors + open
+    return errors + list(open)
 
 
 def get_sum2(errors, L):
     if not errors:
         return L
-    stops = errors[:]
     max_s = 0
     prev_stop = None
     stop = None
-    for stop in stops:
+    for stop in errors:
         if prev_stop is None:
             s = stop
         else:
@@ -238,7 +239,6 @@ def solution2(S, K):
         if i - 2 >= 0 and i - 2 in results:
             processed = True
             result = results[i - 2]
-            points = result['points']
             try:
                 new_error_left_index = change_points[i]
                 new_error_right_index = change_points[i + 1]
@@ -251,8 +251,8 @@ def solution2(S, K):
                 break
 
             try:
-                drop_error_left_index = change_points[result['last_error_index'] - 1]
-                drop_error_right_index = change_points[result['last_error_index']]
+                drop_error_left_index = change_points[result - 1]
+                drop_error_right_index = change_points[result]
                 drop_error_left = S[drop_error_left_index]
                 drop_error_right = S[drop_error_right_index]
             except:
@@ -267,10 +267,7 @@ def solution2(S, K):
                 end = change_points[i + 2] if i + 2 < len(change_points) else L
                 current_len = end - drop_error_right_index - 1
                 max_len = max(current_len, max_len)
-                results[i] = {
-                    'points': points,
-                    'last_error_index': new_error_right_index
-                }
+                results[i] = new_error_right_index
 
                 if end == L:
                     break
@@ -315,10 +312,7 @@ def solution2(S, K):
             current_len = get_sum2(errors, L)
             max_len = max(current_len, max_len)
 
-            results[i] = {
-                'points': points,
-                'last_error_index': last_changed
-            }
+            results[i] = last_changed
 
 
     return max_len
@@ -327,7 +321,7 @@ def solution2(S, K):
 
 def get_errors3(S, L):
     errors = []
-    open = []
+    open = deque()
     open_count = 0
     for i in xrange(L):
         cur = S[i]
@@ -340,34 +334,16 @@ def get_errors3(S, L):
             else:
                 open_count -= 1
                 open.pop()
-    return errors + open
-
-
-def get_change_points3(S, L, errors):
-    result = errors[:]
-    if 0 not in errors:
-        for i in xrange(errors[0]):
-            cur = S[i]
-            if cur == ')':
-                result = [i] + result
-                break
-    if L - 1 not in errors:
-        for i in xrange(L - 1, errors[-1], -1):
-            cur = S[i]
-            if cur == '(':
-                result.append(i)
-                break
-    return result
+    return errors + list(open)
 
 
 def get_sum3(errors, L):
     if not errors:
         return L
-    stops = errors[:]
     max_s = 0
     prev_stop = None
     stop = None
-    for stop in stops:
+    for stop in errors:
         if prev_stop is None:
             s = stop
         else:
@@ -392,53 +368,53 @@ def get_special_errors(S, errors):
     return None
 
 
-def _solution3(S, K):
+
+@measure
+def solution3(S, K):
     S = list(S)
     L = len(S)
     if L <= 1:
         return 0
-    errors = get_errors2(S, L)
-    #special_errors = get_special_errors(S, errors)
+
+    errors = get_errors3(S, L)
+
+    special_errors = get_special_errors(S, errors)
+
     if not errors:
         return L
-    max_len = get_sum2(errors, L)
+    max_len = get_sum3(errors, L)
     if K == 0:
         return max_len
     errors_len = len(errors)
-    for i in xrange(L):
-        current_S = S[i:]
-        L = len(current_S)
-        errors = get_errors2(current_S, L)
-        errors_len = len(errors)
-        if not errors:
-            max_len = max(L, max_len)
-            break
-        special_errors = get_special_errors(current_S, errors)
-        end_error_index0 = K * 2 - 1
+
+    for i in xrange(errors_len):
+        end_error_index0 = i + K * 2 - 1
         for j in xrange(2):
-            start_error_index0 = 0
+            start_error_index0 = i
             start_error_index = errors[start_error_index0]
-            try:
+            if end_error_index0 < errors_len:
                 end_error_index = errors[end_error_index0]
-            except:
+            else:
                 end_error_index = None
-            start_error = current_S[start_error_index]
+            start_error = S[start_error_index]
             if end_error_index is not None:
-                end_error = current_S[end_error_index]
+                end_error = S[end_error_index]
             else:
                 end_error = None
             if start_error == end_error:
                 break
             elif j == 0 and special_errors:
-                if (special_errors[0][0]) % 2 == 0:
+                if (special_errors[0][0] - i) % 2 == 0:
                     end_error_index0 -= 2
                 else:
                     break
+
+
         if start_error_index0 == end_error_index0:
             continue
-        try:
+        if end_error_index0 + 1 < errors_len:
             next_error_index = errors[end_error_index0 + 1]
-        except:
+        else:
             next_error_index = None
         if next_error_index is not None:
             end = next_error_index
@@ -447,44 +423,28 @@ def _solution3(S, K):
                 end = errors[-1]
             else:
                 end = L
-        start = 0
+        if i == 0:
+            start = 0
+        else:
+            if errors[i] - errors[i - 1] > 1:
+                start = errors[i - 1] + 1
+            else:
+                start = start_error_index
         s = end - start
         max_len = max(s, max_len)
         if end == L:
             break
+
     return max_len
 
-@measure
-def solution3(S, K):
-    S1 = list(S)
-    S2 = list(S)
-    L = len(S)
-    for i in xrange(L):
-        cur = S[i]
-        if cur == ')':
-            S1[i] = '('
-            S1 = S1[i:]
-            break
-    for i in xrange(L - 1, -1, -1):
-        cur = S[i]
-        if cur == '(':
-            S2[i] = ')'
-            S2 = S2[:i + 1]
-            break
-    sol1 = _solution3(S1, K - 1)
-    sol2 = _solution3(S2, K - 1)
-    sol = _solution3(S, K)
-    return max(sol, sol1, sol2)
 
 
 
-#*********************************************
-"""
 #S = '()((())'
+"""
+S = '()(((()'
 
-S = ')()(()'
-
-K = 1
+K = 2
 
 sol2 = solution1(S, K)
 sol3 = solution3(S, K)
@@ -497,9 +457,9 @@ import random
 variants = ['(', ')']
 
 
-for k in xrange(10000):
-    l = random.choice(list(xrange(1, 11)))
-    K = random.choice(list(xrange(1, 10)))
+for k in xrange(1000):
+    l = random.choice(list(xrange(1, 1000)))
+    K = random.choice(list(xrange(1, 1000)))
 
     S = ''
     for i in xrange(l):
@@ -508,8 +468,9 @@ for k in xrange(10000):
     sol1 = solution1(S, K)
     sol2 = solution2(S, K)
     sol3 = solution3(S, K)
-    if sol1 != sol2 or sol1 != sol3:
-        print S, K, sol2, sol3
+    if sol1 != sol2:# or sol1 != sol3:
+        print S, K, sol1, sol2
 
 
 print measure.timers
+
