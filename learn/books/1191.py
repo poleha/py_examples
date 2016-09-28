@@ -5894,3 +5894,68 @@ print('Unpacked Values:', unpacked_data)
 
 
 #********************
+
+for i in range(10):
+    print(i % 4, end=' ')
+
+print('************')
+
+for i in range(10):
+    print(i // 4, end=' ')
+
+#************************************
+
+A = [1,2,3,4]
+B = A * 3
+print(A, B) # [1, 2, 3, 4] [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4]
+A[2]=45
+print(A, B) # [1, 2, 45, 4] [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4]
+
+
+
+A = [1,2,3,4]
+B = [A] * 3
+print(A, B) # [1, 2, 3, 4] [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
+A[2]=45
+print(A, B) # [1, 2, 45, 4] [[1, 2, 45, 4], [1, 2, 45, 4], [1, 2, 45, 4]]
+
+# ************************************
+
+(54).__add__(21) #75
+
+
+# ************************
+
+#The main difference between list and tuple is that tuple is immutable like str
+
+a = (1, 2, 3)
+a[0] = 4
+
+#TypeError: 'tuple' object does not support item assignment
+
+#**********************************
+
+a = {1, 2, 3}
+b = {3, 4, 5}
+print(a and b) #{3, 4, 5} # Doesn't work as expected
+
+print(a & b) # {3}
+print(a.intersection(b)) # {3}
+
+print(a.union(b)) # {1, 2, 3, 4, 5}
+print(a | b) #{1, 2, 3, 4, 5}
+
+print(a.difference(b)) #{1, 2}
+
+print(a.issubset(b)) #False
+
+print(a.issuperset(b)) #False
+#print(a + b) #TypeError: unsupported operand type(s) for +: 'set' and 'set'
+print(a <= b) # True if all the elements of b is present in a
+
+# *********************************
+
+a = 1
+
+def test():
+    print(a)
