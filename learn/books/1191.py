@@ -103,48 +103,10 @@ print(type(person).__dict__)
 
 
 
-#*************************
-class ExternalStorage:
-    __slots__ = ("attribute_name",)
-    __storage = {}
-
-    def __init__(self, attribute_name):
-        self.attribute_name = attribute_name
-
-    def __set__(self, instance, value):
-        self.__storage[id(instance), self.attribute_name] = value #tuple as dict key
-
-    def __get__(self, instance, owner=None):
-        if instance is None:
-            return self
-        return self.__storage[id(instance), self.attribute_name]
-
-class Point:
-    __slots__ = ()
-    x = ExternalStorage("x")
-    y = ExternalStorage("y")
-
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
-
-p1 = Point(1,2)
-p2 = Point(3,4)
-print(p1.x, p1.y)
-
-#tuple as dict key
-a = {}
-a['123','456'] = 1
-print(a)
-#******************************
 
 
-
-
-
-
-#*************************************** stud
-class C(object):
+#***************************************
+class C:
     def __init__(self):
         self._x = None
 
@@ -414,10 +376,14 @@ x.name = 'Bob'
 #y.name = 'Sue' # <== ошибка
 y.age = 30
 #x.age = 40 # <== ошибка
-#y.name - ощибка
+#y.name - ошибка
 #***************************
 
 """
+ The __slots__ declaration takes a sequence of instance variables and reserves just enough space in each instance
+to hold a value for each variable. Space is saved because __dict__ is not created for each instance.
+
+
 >>> class D:
 ... __slots__ = ['a', 'b', '__dict__'] # Добавить __dict__ в слоты
 ... c = 3 # Атрибуты класса действуют как обычно
@@ -443,7 +409,49 @@ AttributeError: a # пока им не будет присвоено значе�
 ... print(attr, '=>', getattr(X, attr))
 
 """
-#******************************
+
+#*************************
+# This will work without slots, dict will be created
+
+class ExternalStorage:
+    __slots__ = ("attribute_name",)
+    __storage = {}
+
+    def __init__(self, attribute_name):
+        self.attribute_name = attribute_name
+
+    def __set__(self, instance, value):
+        self.__storage[id(instance), self.attribute_name] = value #tuple as dict key
+
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            return self
+        return self.__storage[id(instance), self.attribute_name]
+
+class Point:
+    __slots__ = ()
+    x = ExternalStorage("x")
+    y = ExternalStorage("y")
+
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+p1 = Point(1,2)
+p2 = Point(3,4)
+print(p1.x, p1.y)
+
+#test = ExternalStorage("test")
+#print(test.__dict__)
+#AttributeError: 'ExternalStorage' object has no attribute '__dict__'
+
+#tuple as dict key
+a = {}
+a['123','456'] = 1
+print(a)
+
+
+#*****************************************
 
 #Слоты — это список атрибутов, задаваемый в заголовке класса с помощью __slots__.
 # В инстансе необходимо назначить атрибут, прежде чем пользоваться им:
@@ -995,22 +1003,6 @@ def decorator(C): # На этапе декорирования @
     def onCall(*args, **kwargs): # На этапе создания экземпляра
         return Wrapper(C(*args, **kwargs)) # Встраивает экземпляр в экземпляр
     return onCall
-#**************************
-
-
-
-class Decor():
-    def __init__(self, func):
-        self.func = func
-        self.counter = 0
-    def __call__(self, *args, **kwargs):
-       self.counter +=1
-       print(self.counter)
-       return self.func(*args, **kwargs)
-
-@Decor
-def fun(a, b):
-    return a + b
 
 #***************************
 
@@ -1060,13 +1052,14 @@ def hamfunc(obj, value):
 # Расширение вручную – добавление новых методов в классы
 @decor_maker({'eggs': eggsfunc, 'ham': hamfunc})
 class Client1:
-
+    pass
 
 
 #***********************************************************************************************************
 #***********************************************************************************************************
 #***********************************************************************************************************
 #Метаклассы
+
 """
 Говоря техническим языком, интерпретатор следует стандартному протоколу:
 в конце инструкции class после выполнения всех вложенных инструкций и со-
@@ -1079,8 +1072,10 @@ class Meta(type):
     @staticmethod
     def __new__(meta, classname, classbases, classattr):
         print('1Meta.__new__')
-        return type.__new__(meta, classname, classbases, classattr)
-        #return super(Meta, meta).__new__(meta, classname, classbases, classattr)
+        return type.__new__(meta, classname, classbases, classattr) # Это будет instance of meta
+        #return super(Meta, meta).__new__(meta, classname, classbases, classattr) # Это будет instance of meta
+        #return type(classname, classbases, classattr) # Пропустим 2 и 3, что не верно. Это будет instance of type
+        # Тогда при создании SubMeta будет вызван type, а не Meta. Потому и не вызовутся 2 и 3
 
     def __init__(submeta, classname, classbases, classattr):
         print('2Meta.__init__')
@@ -1103,6 +1098,7 @@ class SubMeta(type, metaclass=Meta):
         print('4SubMeta.__new__')
         return type.__new__(submeta, classname, classbases, classattr)
         #return super(SubMeta, submeta).__new__(submeta, classname, classbases, classattr)
+        #return type(classname, classbases, classattr)  # Пропустим 6. 5 не пропустим тк видимо type при создании класса метакласс вызывает __init__, а при создании метакласса(type) не вызывает
 
     def __init__(cls, classname, classbases, classattr):
         print('5SubMeta.__init__')
@@ -1174,6 +1170,8 @@ Meta = type2(classname, supers, classdict) = type1.__call__(type2, classname, su
 type2.__new__(type2, classname, supers, classdict)  - тут super() не сработает, тк для type super() - это object
 type2.init(Meta, classname, supers, classdict)
 """
+
+
 #*************************************
 
 
@@ -5959,3 +5957,11 @@ a = 1
 
 def test():
     print(a)
+
+#************************************
+res = map(lambda x, y: print(x, y), [1, 2, 3], [4, 5, 6])
+list(res) # will pint nothing in python 3 since it's a generator
+#1 4
+#2 5
+#3 6
+#**************************************************
