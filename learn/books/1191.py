@@ -1222,7 +1222,7 @@ self здесь всегда - экземпляр класса SubMeta.
 #***********************
 
 
-# Простая функция также может играть роль метакласса
+# Простая функция также может играть роль метакласса. Но это будет instance of type. Чтобы получить
 def MetaFunc(classname, supers, classdict):
     print('In MetaFunc: ', classname, supers, classdict, sep='\n...')
     return type(classname, supers, classdict)
@@ -1239,7 +1239,53 @@ print('making instance')
 X = Spam()
 print('data:', X.data)
 
+#************************
+
+class Meta(type):
+    def __new__(cls, *args, **kwargs):
+        #return type(*args, **kwargs)
+        return type.__new__(cls, *args, **kwargs)
+
+
+class Eggs:
+    pass
+
+
+class Spam(Eggs, metaclass=Meta): # В конце вызовет простую функцию
+    pass
+
+print(type(Spam))
+#<class '__main__.Meta'>
+#<class 'type'> Если поменять коммент
+
+
+
 #*******************
+class Meta(type):
+    def __new__(cls, *args, **kwargs):
+        return type.__new__(cls, *args, **kwargs)
+
+
+class Meta1(type):
+    def __new__(cls, *args, **kwargs):
+        return type.__new__(cls, *args, **kwargs)
+
+
+
+class Eggs(metaclass=Meta1):
+    pass
+
+
+class Spam(Eggs, metaclass=Meta): # В конце вызовет простую функцию
+    pass
+
+
+#TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the metaclasses of all its bases
+# При этом если Meta1(Meta), то все ОК
+
+#********************************
+
+
 
 # Управление экземплярами подобно предыдущему примеру, но с помощью метакласса
 def Tracer(classname, supers, classdict): # На этапе создания класса
@@ -1271,8 +1317,18 @@ ob.test()
 #********************
 # Фабрика метаклассов: применяет любой декоратор ко всем методам класса
 #study
+"""
+def tracer(func):
+    def wrapper(*args, **kwargs):
+        wrapper.count += 1
+        print('Количество вызовов', func.__name__, wrapper.count)
+        return func(*args, **kwargs)
+    wrapper.count = 0
+    return wrapper
+"""
+
 from types import FunctionType
-from mytools import tracer, timer
+from mytools import tracer # tracer упомянут ранее
 def decorateAll(decorator):
     class MetaDecorate(type):
         def __new__(meta, classname, supers, classdict):
@@ -1304,7 +1360,8 @@ def decorateAll(decorator):
 
 @decorateAll(tracer) # Используется декоратор класса
 class Person:
-    pass
+    def test(self):
+        pass
 #...
 
 #Пояснение к *: aClass.__dict__[attr] = decorator(attrval) Не сработает, см ниже *
@@ -1323,6 +1380,7 @@ print(d['a'])   #2
 #***********************************************************************************************************
 #***********************************************************************************************************
 #Итераторы
+#*************************************
 #Тут экземпляр будет собственным итератором, то есть мы не сделаем вложенный цикл или несколько циклов
 # одновременно
 class Iters:
