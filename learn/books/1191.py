@@ -1505,7 +1505,7 @@ for char in Reverse('12345'):
 
 it = iter((1, 2))
 it = (1, 2).__iter__()
-it = (1, 2)
+print(it)
 #<tuple_iterator object at 0x7f55482cfd68>
 print(it.__next__()) #1
 print(it.__next__()) #2
@@ -1574,14 +1574,14 @@ def mysum(L):
 # stud
 class SimpleListTree:
     def __str__(self):
-        self.__visited = {}
+        self.__visited = set()
         return self.__listclass(self.__class__)
 
     def __listclass(self, aClass, level=0):
         if aClass in self.__visited:
             return aClass.__name__ + str(level) + ' Visited' + '\n'
         else:
-            self.__visited[aClass] = True
+            self.__visited.add(aClass)
             strabove = ''
             for c in aClass.__bases__:
                 strabove += self.__listclass(c, level+1)
@@ -1619,13 +1619,13 @@ class SimpleListTree:
 
 class SimpleListTree:
     def __str__(self):
-        self.__visited = {}
+        self.__visited = set()
         return self.__lt(self.__class__)
 
     def __lt(self, aClass, level=0):
         if aClass in self.__visited:
             return aClass.__name__ + '-visited'
-        self.__visited[aClass] = True
+        self.__visited.add(aClass)
         above = ''
         for c in aClass.__bases__:
             above += self.__lt(c, level + 1)
@@ -1657,8 +1657,6 @@ C0,A1,SimpleListTree2,object3,B1,object-visited
 """
 
 
-
-
 #**************************
 class ListTree:
     """
@@ -1671,7 +1669,7 @@ class ListTree:
     очевидной, использует метод str.format()
     """
     def __str__(self):
-        self.__visited = {}
+        self.__visited = set()
         return '<Instance of {0}, address {1}:\n{2}{3}>'.format(
                                         self.__class__.__name__,
                                         id(self),
@@ -1686,7 +1684,7 @@ class ListTree:
                                                             aClass.__name__,
                                                             id(aClass))
         else:
-            self.__visited[aClass] = True
+            self.__visited.add(aClass)
             genabove = (self.__listclass(c, indent+4) for c in aClass.__bases__)
             #genabove = [self.__listclass(c, indent+4) for c in aClass.__bases__] - так принципиальная разница. Разобрать.
             return '\n{0}<Class {1}, address {2}:\n{3}{4}{5}>\n'.format(
@@ -1714,12 +1712,38 @@ class ListTree:
 #Функции(пока нет раздела).Области видимости.
 
 
-# Like kwargs but named. We cant call without naming.
+# Все, что после звездочки, как и после *args - только именованные. Не может быть вызвана без b=2
 def test(a, *, b, c=None):
     print(a, b, c)
 
 test(1, b=2)
 #test(1, 2) #TypeError: test() takes 1 positional argument but 2 were given
+
+# Positional with default value
+def test(a, b=2):
+    print(a, b)
+
+test(1, 2)
+
+#***
+
+def test(a, *, b=2):
+    print(a, b)
+
+#test(1, 2) # TypeError: test() takes 1 positional argument but 2 were given
+#test(1, 3, b=2) TypeError: test() takes 1 positional argument but 2 positional arguments (and 1 keyword-only argument) were given
+test(1, b=2)
+
+
+#***
+
+def test(a, *args, b=2):
+    print(a, b)
+
+#test(1, 2) # TypeError: test() takes 1 positional argument but 2 were given
+#test(1, 3, b=2)
+test(1, b=2)
+
 
 
 #***********************  stud
