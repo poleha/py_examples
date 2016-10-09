@@ -1968,7 +1968,7 @@ class Commuter: # Тип класса распространяется на ре
 
     def __add__(self, other):
         print('__add__')
-        if isinstance(other, Commuter): other = other.val
+        if isinstance(other, Commuter): other = other.val # Без этого z = x + y даст <Commuter: <Commuter: 187>>
         return Commuter(self.val + other)
 
     def __radd__(self, other):
@@ -2038,11 +2038,6 @@ ob.meth2(); ob.methb()
 #
 #>>> def f(a, *b, **d, c=6): print(a, b, c, d) # Только именованные аргументы
 #SyntaxError: invalid syntax                   # должны предшествовать **!
-
-#>>> def f(a, *b, c=6, **d): print(a, b, c, d) # Коллекции аргументов
-#...
-
-
 
 #******************************
 
@@ -2115,7 +2110,9 @@ Cls.meth1 = unbound1
 ob = Cls()
 ob.meth1(1, 3, named=4)
 ob.meth2(1, 3, named=4)
-
+#<__main__.Cls object at 0x7f17e55afbe0> (1, 3) {'named': 4}
+#<__main__.Cls object at 0x7f17e55afbe0> (1, 3) {'named': 4}
+# Both are bound
 
 #********************
 map(pow, [1, 2, 3], [2, 3, 4]) # 1**2, 2**3, 3**4  # 1**2, 2**3, 3**4
@@ -2246,24 +2243,24 @@ class Spam:
     SpamInstances = 0
     def __init__(self):
         Spam.SpamInstances += 1
+        #self.SpamInstances += 1 #! ВНИМАНИЕ. Это создаст в self.__dict__ переменную SpamInstances, взяв за исходное значение SpamInstances = 0
         #type(self).SpamInstances += 1
         #self.__class__.SpamInstances += 1
         #self.SpamInstances += 1 #Так не сработает, см далее пример
-    @classmethod # print_numInstances = staticmethod(print_numInstances)
+    @classmethod # print_numInstances = classmethod(print_numInstances)
     def print_numInstances(cls):
         print('Number of instances created: ', cls.SpamInstances)
 
 ob, ob1, ob3 = Spam(), Spam(), Spam()
 Spam.print_numInstances() #3
 ob.print_numInstances() #3
-
+#********************
 
 class Spam:
     egg = 1
     def test(self, val):
         self.egg += val
 
-#********************
 ob = Spam()
 ob.test(3)
 print(ob.egg) #4 !!! ВНИМАНИЕ
@@ -4739,6 +4736,28 @@ c:\temp> type random.bin
 XXXXXXXXppppppppYYYYYYYYmmmmmmmm # посмотреть файл за пределами Python
 
 """
+#****************************************
+
+a = r'abc'
+b = u'abc'
+c = 'abc'
+d = b'abc'
+print(a == b == c)
+print(c == d)
+print(type(a), type(b), type(c), type(d))
+
+#Python2
+#True
+#True
+#(<type 'str'>, <type 'unicode'>, <type 'str'>, <type 'str'>)
+
+#Python3
+#True
+#False
+# <class 'str'> <class 'str'> <class 'str'> <class 'bytes'>
+
+
+
 #********************************
 from io import StringIO
 import sys
@@ -6047,3 +6066,18 @@ list(res) # will pint nothing in python 3 since it's a generator
 #2 5
 #3 6
 #**************************************************
+
+s = 0
+a = (s + 1, s + 2, s + 3)
+
+for cur in a:
+    print(a)
+    s += 1000
+
+#(1, 2, 3)
+#(1, 2, 3)
+#(1, 2, 3)
+
+#****************************
+print((1, 2, 3)) # (1, 2, 3) - tuple
+print((i for i in range(1, 4))) #<generator object <genexpr> at 0x7f5d522e6fc0>
