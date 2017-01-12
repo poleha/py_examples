@@ -31,7 +31,7 @@ such that ci ¬ j).
 
 
 #My, but based on their algorithm
-#stud
+# stud
 
 MAX_INT = float('inf')
 
@@ -55,3 +55,15 @@ k = 6
 
 sol = dynamic_coin_changing(C, k)
 print sol
+
+# stud
+def dpMakeChange(coinValueList,change):
+   minCoins = {}
+   for cents in range(change+1):
+      coinCount = cents
+      for j in (c for c in coinValueList if c <= cents):
+            if minCoins[cents-j] + 1 < coinCount:
+               coinCount = minCoins[cents-j]+1
+      minCoins[cents] = coinCount
+   return minCoins[change]
+

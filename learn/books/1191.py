@@ -1885,6 +1885,53 @@ print(y) #2, изменен внутри inner2
 
 #*********************************
 
+# For interview
+"""
+a = 1
+def fun():
+    a += 1
+    return a
+
+print(fun())
+#UnboundLocalError: local variable 'a' referenced before assignment
+"""
+
+"""
+a = 1
+def fun():
+    global a
+    a += 1
+    return a
+
+print(fun()) #3
+"""
+
+"""
+def fun1(a):
+    def fun2():
+        nonlocal a
+        a += 1
+        return a
+    return fun2()
+
+
+print(fun1(2))
+# 3
+"""
+
+"""
+def fun1(a):
+    def fun2():
+        a += 1
+        return a
+    return fun2()
+
+
+print(fun1(2))
+#UnboundLocalError: local variable 'a' referenced before assignment
+"""
+
+
 
 #***********************************************************************************************************
 #***********************************************************************************************************
@@ -6081,3 +6128,42 @@ for cur in a:
 #****************************
 print((1, 2, 3)) # (1, 2, 3) - tuple
 print((i for i in range(1, 4))) #<generator object <genexpr> at 0x7f5d522e6fc0>
+
+
+#***********************
+#from django functools. stud.
+class cached_property(object):
+    """
+    Decorator that converts a method with a single self argument into a
+    property cached on the instance.
+
+    Optional ``name`` argument allows you to make cached properties of other
+    methods. (e.g.  url = cached_property(get_absolute_url, name='url') )
+    """
+    def __init__(self, func, name=None):
+        self.func = func
+        self.__doc__ = getattr(func, '__doc__')
+        self.name = name or func.__name__
+
+    def __get__(self, instance, cls=None):
+        if instance is None:
+            return self
+        res = instance.__dict__[self.name] = self.func(instance)
+        return res
+
+#***********************
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fib(n):
+    if n < 2:
+        return n
+    return fib(n-1) + fib(n-2)
+
+#>>> [fib(n) for n in range(16)]
+#[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610]
+
+#>>> fib.cache_info()
+#CacheInfo(hits=28, misses=16, maxsize=None, currsize=16)
+
+#*********************************
