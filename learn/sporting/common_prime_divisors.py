@@ -35,8 +35,8 @@ expected worst-case space complexity is O(1), beyond input storage (not counting
 Elements of input arrays can be modified.
 """
 
-
 from measure import measure
+
 
 @measure
 def get_gd(u, v):
@@ -44,6 +44,8 @@ def get_gd(u, v):
         u, v = v, u % v
     return abs(u)
 
+
+# Делим rest на общий делитель пока не получим единицу. Если не делится и rest > 1, значит мимо.
 @measure
 def check_gd_and_rest(gd, rest):
     while rest > 1:
@@ -57,7 +59,6 @@ def check_gd_and_rest(gd, rest):
         return False
     else:
         return True
-
 
 
 @measure
@@ -75,8 +76,8 @@ def solution(A, B):
         if check_gd_and_rest(gd, rest_a) and check_gd_and_rest(gd, rest_b):
             count += 1
 
-
     return count
+
 
 A = [2 * 3 * 5 * 5 * 5 * 3 * 2 * 7]
 B = [2 * 3 * 5 * 3]
@@ -85,8 +86,6 @@ print(sol)
 
 print(measure.timers)
 print(measure.calls)
-
-
 
 """
 
