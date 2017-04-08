@@ -59,10 +59,10 @@ Elements of input arrays can be modified.
 from measure import measure
 
 # For fun via recursion
-def count1(N, s=0, res=0):
+def count1(N, s=0):
     if s < N:
-        res1 = count1(N, s + 1, res)
-        res2 = count1(N, s + 2, res)
+        res1 = count1(N, s + 1)
+        res2 = count1(N, s + 2)
         return res1 + res2
     elif s == N:
         return 1
@@ -204,11 +204,11 @@ def solution4(A, B):
     return res
 
 
-A = [1000] * 10000
-B = [2] * 10000
-#sol1 = solution1(A, B)
-#sol2 = solution2(A, B)
+A = [10] * 7
+B = [2] * 7
+sol1 = solution1(A, B)
+sol2 = solution2(A, B)
 sol3 = solution4(A, B)
-#print(sol3)
+print(sol1 == sol2 == sol3)
 
 print(measure.timers)
