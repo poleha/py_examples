@@ -1579,3 +1579,64 @@ if __name__ == "__main__":
 # request 27 handled in coroutine 3
 # request 20 handled in coroutine 2
 # (0.2369999885559082, 0.16199994087219238)
+
+
+#**************************************
+
+from collections import deque
+
+import types
+
+
+class Loop:
+    def __init__(self):
+        self.q = deque()
+        self.running = False
+
+    def run(self):
+        self.running = True
+        res = None
+        while self.running and self.q:
+            task = self.q.popleft()
+            res = task()
+        return res
+
+    def schedule(self, coroutine, stack=(), val=None):
+        def resume():
+            res = coroutine.send(val)
+            if isinstance(res, types.GeneratorType):
+                self.schedule(coroutine=res, stack=(coroutine, stack))
+            elif stack:
+                self.schedule(stack[0], stack=stack[1], val=res)
+            else:
+                return res
+
+        self.q.append(resume)
+
+def sub_sub_task():
+    while True:
+        yield 5
+
+
+def sub_task():
+    res = yield from sub_sub_task()
+    yield res
+
+
+def task():
+    res = yield sub_task()
+    print(res)
+    yield res
+
+
+def simple_task():
+    print('simple_task')
+    yield
+
+
+loop = Loop()
+
+loop.schedule(task())
+loop.schedule(simple_task())
+
+loop.run()

@@ -1,5 +1,8 @@
-import types
+# stud
 from collections import deque
+
+import types
+
 
 class Loop:
     def __init__(self):
@@ -20,7 +23,9 @@ class Loop:
                 self.schedule(coroutine=res, stack=(coroutine, stack))
             elif stack:
                 self.schedule(stack[0], stack=stack[1], val=res)
+
         self.q.append(resume)
+
 
 """
 def coroutine(func):
@@ -31,6 +36,7 @@ def coroutine(func):
     return wrapper
 """
 
+
 def sub_sub_task():
     while True:
         yield 5
@@ -40,14 +46,17 @@ def sub_task():
     res = yield from sub_sub_task()
     yield res
 
+
 def task():
     res = yield sub_task()
     print(res)
     yield res
 
+
 def simple_task():
     print('simple_task')
     yield
+
 
 loop = Loop()
 
