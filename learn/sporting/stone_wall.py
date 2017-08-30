@@ -37,7 +37,8 @@ from measure import create_measure
 
 measure = create_measure(timers)
 
-#Doesn't work on  #A = [1, 1000000000, 1]
+
+# Doesn't work on  #A = [1, 1000000000, 1]
 @measure()
 def solution1(H):
     if not H:
@@ -45,7 +46,6 @@ def solution1(H):
     cur_max = H[0]
     not_count = set()
     count = 0
-
     for cur in H:
         if cur < cur_max:
             for i in range(cur + 1, cur_max + 1):
@@ -58,35 +58,44 @@ def solution1(H):
     return count
 
 
-#O(N)
+"""
+Идея в том, что все, что уже было, мы не считаем.
+Но снижение ниже текущего минимума сбрасывает это.
+
+# 2, 3, 4, 3
+
+   *
+ * **
+*****
+*****
+
+
+"""
+
+
+# O(N)
 @measure()
 def solution2(H):
     if not H:
         return 0
-    cur_max = H[0]
+    cur_min = H[0]
     not_count = set()
     count = 0
-
     for cur in H:
-        L = len(not_count)
-        if cur_max - cur > L:
-            if cur < cur_max:
-                new_not_count = set()
-                while not_count:
-                    cur_not_count = not_count.pop()
-                    if cur_not_count <= cur:
-                        new_not_count.add(cur_not_count)
-                not_count = new_not_count
+        if cur < cur_min:
+            # Если снизились ниже текущего минимума - все сбрасывается
+            not_count = set()
+            cur_min = cur
         else:
-            for i in range(cur + 1, cur_max + 1):
-                if i in not_count:
-                    not_count.remove(i)
-
-        cur_max = cur
+            # Если мы выше или на уровне текущего минимума, начинаем считать все,
+            # что выше данной точки
+            not_count = set(filter(lambda x: x <= cur, not_count))
         if cur not in not_count:
             count += 1
             not_count.add(cur)
+
     return count
+
 
 # Это их решение
 @measure()
@@ -112,18 +121,19 @@ def solution3(H):
             stack_num += 1
     return stones
 
-A = [1, 2, 3, 1]
-#A = [3, 1, 1, 3]
-#A = [1, 1000000000, 1]
-#A = [8, 8, 5, 7, 9, 8, 7, 4, 8]
-sol = solution3(A)
+
+A = [2, 4, 2, 8, 4]
+# A = [3, 1, 1, 3, 7, 5, 2, 8]
+# A = [1, 1000000000, 1]
+# A = [8, 8, 5, 7, 9, 8, 7, 4, 8]
+sol = solution2(A)
 print(sol)
 
 import random
 
-for i in range(1000):
+for i in range(100000):
     A = []
-    for j in range(400):
+    for j in range(20):
         cur = int(round(random.random() * 400))
         if cur == 0:
             cur = 1
@@ -134,7 +144,5 @@ for i in range(1000):
     if not res1 == res2 == res3:
         print(A, res1, res2, res3)
 
-
-
 print(timers)
-#{'solution2': 0.3388378620147705, 'solution3': 0.12395262718200684, 'solution1': 1.362870693206787}
+# {'solution3': 0.8351426124572754, 'solution1': 5.795496225357056, 'solution2': 1.8416786193847656}

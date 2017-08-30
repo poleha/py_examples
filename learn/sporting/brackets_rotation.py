@@ -38,6 +38,8 @@ from collections import deque
 
 xrange = range
 
+
+
 # Correct but slow
 def get_errors(S, L):
     errors = []
@@ -504,21 +506,171 @@ def solution3(S, K):
     return max(sol, sol1, sol2)
 
 
+
+#**********************************************
+
+
+def get_errors4(S, L, fixes=None):
+    fixes = fixes if fixes else {}
+    errors = []
+    open = deque()
+    open_count = 0
+    for i in xrange(L):
+        cur = fixes.get(i) or S[i]
+        if cur == '(':
+            open_count += 1
+            open.append(i)
+        else:
+            if open_count == 0:
+                errors.append(i)
+            else:
+                open_count -= 1
+                open.pop()
+    return errors + list(open)
+
+
+
+def get_sum4(errors, L):
+    if not errors:
+        return L
+    stops = errors[:]
+    max_s = 0
+    prev_stop = None
+    stop = None
+    for stop in stops:
+        if prev_stop is None:
+            s = stop
+        else:
+            s = stop - prev_stop - 1
+        max_s = max(s, max_s)
+        prev_stop = stop
+    if stop is not None and stop < L - 1:
+        max_s = max(max_s, L - stop - 1)
+    return max_s
+
+
+def rotate4(cur):
+    if cur == '(':
+        return ')'
+    else:
+        return '('
+
+def get_change_points4(S, L, errors):
+    result = errors[:]
+    if 0 not in errors:
+        for i in xrange(errors[0]):
+            cur = S[i]
+            if cur == ')':
+                result = [i] + result
+                break
+    if L - 1 not in errors:
+        for i in xrange(L - 1, errors[-1], -1):
+            cur = S[i]
+            if cur == '(':
+                result.append(i)
+                break
+    return result
+
+
+@measure
+def solution4(S, K):
+    S = list(S)
+    L = len(S)
+    if L <= 1:
+        return 0
+
+    initial_errors = get_errors4(S, L)
+    if not initial_errors:
+        return L
+    max_len = get_sum4(initial_errors, L)
+    if K == 0:
+        return max_len
+
+    change_points = get_change_points4(S, L, initial_errors)
+    initial_errors = set(initial_errors)
+    for i in xrange(len(change_points)):
+        fixes = {} # Stores positions of fixes from original list
+        сurrent_test_len = 0
+        points = K
+        left = None
+        right = None
+        for j in xrange(i, len(change_points)):
+            change_point = change_points[j]
+            prev_change_point = change_points[j - 1] if j - 1 >= 0 else None
+            if left is None:
+                left = S[change_point]
+            elif right is None:
+                right = S[change_point]
+            if left and right:
+                if left == right:
+                    if prev_change_point not in initial_errors:
+                        fixes[prev_change_point] = rotate(S[prev_change_point])
+                        start = max(prev_change_point - 1, 0)
+                    elif change_point not in initial_errors:
+                        fixes[change_point] = rotate4(S[change_point])
+                        end = min(change_point + 1, L - 1)
+                    elif left == '(':
+                        fixes[change_point] = rotate4(S[change_point])
+                        start = change_points[i]
+                    else:
+                        fixes[prev_change_point] = rotate4(S[prev_change_point])
+
+                    points -= 1
+                    fixed = True
+                elif points >= 2:
+                    fixes[prev_change_point] = rotate4(S[prev_change_point])
+                    fixes[change_point] = rotate4(S[change_point])
+                    points -= 2
+                    fixed = True
+                else:
+                    fixed = False
+                    break
+                if fixed:
+                    if left not in initial_errors and left in fixes:
+                        start = change_points[i]
+                    else:
+                        start = change_points[i] if i - 1 in initial_errors else 0
+                    if right not in initial_errors and right in fixes:
+                        end = change_points[j]
+                    else:
+                        end = change_points[j + 1] if j < len(change_points) - 1 else L
+
+                    сurrent_test_len = end - start
+
+                left = None
+                right = None
+                if points == 0:
+                    break
+
+
+        errors = get_errors4(S, L, fixes=fixes)
+        current_len = get_sum4(errors, L)
+        max_len = max(сurrent_test_len, max_len)
+
+    return max_len
+
+
+"""
+Идея в том, что нам нужно не менять исходный массив, а хранить места, которые мы изменили. - done
+И по "вылеченным" местам определять, какова длина правильного участка.
+То есть нам нужна первая ошибка или начало и последняя ошибка или конец.
 """
 
-S = '()((())'
-K = 1
+
+
+S = '())'
+K = 2
 #S = '))(('
 
 
 
-sol2 = solution1(S, K)
+sol1 = solution1(S, K)
 
-sol3 = solution3(S, K)
+sol4 = solution4(S, K)
 #S = list(reversed(S))
 #sol3 = max(solution3(S, K), sol3)
 
-print(sol2, sol3)
+print(sol1, sol4)
 
 """
 import random
@@ -534,11 +686,13 @@ for k in xrange(10000):
     for i in xrange(l):
         variant = random.choice(variants)
         S += variant
-    #sol1 = solution1(S, K)
-    sol2 = solution2(S, K)
-    sol3 = solution3(S, K)
-    if sol2 != sol3:
-        print('S=', S, 'K=', K, 'sol2=',  sol2, 'sol3=', sol3)
+    sol1 = solution1(S, K)
+    #sol2 = solution2(S, K)
+    #sol3 = solution3(S, K)
+    sol4 = solution4(S, K)
+    if sol1 != sol4:
+        print('S=', S, 'K=', K, 'sol1=',  sol1, 'sol4=', sol4)
 
 
 print(measure.timers)
+"""

@@ -1,52 +1,18 @@
-class A:
-    def test(self):
-        print('A')
-        super().test()
+import asyncio
+from aiohttp import ClientSession
 
-class C:
-    def test(self):
-        print('C')
-        #super().test() - error
+async def hello(url):
+    async with ClientSession() as session:
+        async with session.get(url) as response:
+            response = await response.read()
+            return response
 
+loop = asyncio.get_event_loop()
 
-class B(C):
-    def test(self):
-        print('B')
-        super().test()
+tasks = [hello("http://httpbin.org/headers"), hello("http://httpbin.org/headers")]
+tasks = [loop.create_task(task) for task in tasks]
+wait = asyncio.wait(tasks)
+loop.run_until_complete(wait)
 
-
-class D(A, B):
-    def test(self):
-        print('D')
-        super().test()
-        #super().test(self) - error, super() returns bound method
-
-ob = D()
-ob.test()
-
-print('*****************')
-
-
-class A:
-    def test(self):
-        print('A')
-
-
-class B(A):
-    def test(self):
-        print('B')
-        super(B, self).test()
-
-
-class C(A):
-    def test(self):
-        print('C')
-        super(C, self).test()
-
-class D(B, C):
-    def test(self):
-        print('D')
-        super(D, self).test()
-
-d = D()
-d.test()
+for task in tasks:
+    print(task.result().result())

@@ -63,8 +63,8 @@ def solution1(K, A):
     N = len(A)
     for i in range(N):
         j = i
-        min = max = A[i]
-        while max - min <= K:
+        mn = mx = A[i]
+        while mx - mn <= K:
             count += 1
             if count == maxINT:
                 return count
@@ -72,8 +72,8 @@ def solution1(K, A):
             if j >= N:
                 break
             cur = A[j]
-            if cur < min: min = cur
-            if cur > max: max = cur
+            if cur < mn: mn = cur
+            if cur > mx: mx = cur
     return count
 
 
