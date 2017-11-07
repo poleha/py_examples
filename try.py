@@ -1,18 +1,14 @@
-import asyncio
-from aiohttp import ClientSession
+class A:
+    pass
 
-async def hello(url):
-    async with ClientSession() as session:
-        async with session.get(url) as response:
-            response = await response.read()
-            return response
 
-loop = asyncio.get_event_loop()
+def solution(A):
+    res = set()
+    for x, y, z in A:
+        qr = x ** 2 + y ** 2 + z ** 2
+        res.add(qr)
+    return len(res)
 
-tasks = [hello("http://httpbin.org/headers"), hello("http://httpbin.org/headers")]
-tasks = [loop.create_task(task) for task in tasks]
-wait = asyncio.wait(tasks)
-loop.run_until_complete(wait)
 
-for task in tasks:
-    print(task.result().result())
+A =  [(0, 5, 4), (0, 0, -3), (-2, 1, -6), (1, -2, 2), (1, 1, 1), (4, -4, 3)] * 100000
+print(solution(A))
