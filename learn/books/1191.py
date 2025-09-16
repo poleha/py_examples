@@ -1575,19 +1575,16 @@ def mysum(L):
 class SimpleListTree:
     def __str__(self):
         self.__visited = set()
-        return self.__listclass(self.__class__)
+        return self.__list_tree(type(self))
 
-    def __listclass(self, aClass, level=0):
-        if aClass in self.__visited:
-            return aClass.__name__ + str(level) + ' Visited' + '\n'
+    def __list_tree(self, klass, level=0):
+        if klass in self.__visited:
+            return klass.__name__ + str(level) + ' Visited' + '\n'
         else:
-            self.__visited.add(aClass)
-            strabove = ''
-            for c in aClass.__bases__:
-                strabove += self.__listclass(c, level+1)
-            return aClass.__name__ + str(level) + '\n' + strabove
-            #genabove = (self.__listclass(c, level+1) for c in aClass.__bases__)
-            #return 'level = {0} {1}\n{2}'.format(level, aClass.__name__, ''.join(genabove))
+            self.__visited.add(klass)
+            genabove = (self.__list_tree(c, level+1) for c in klass.__bases__)
+            return f'level = {level} {klass.__name__}\n{''.join(genabove)}'
+
     """
     Эта функция получает класс. Вызывает рекурсивно себя с каждым суперклассом класса и суперклассом суперкласса,
     пока не дойдет до object, который не имеет суперклассов. Тогда просто вернет object.
